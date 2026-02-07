@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PI Generator - 形式发票生成器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 280px;
+            background: var(--gray-900);
+            color: white;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .sidebar h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .sidebar .subtitle {
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            color: var(--gray-500);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .page-desc {
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        /* 卡片 */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title .badge {
+            background: var(--gray-100);
+            color: var(--gray-500);
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: normal;
+        }
+
+        /* 表单 */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-group label .en {
+            color: var(--gray-400);
+            font-weight: normal;
+            margin-left: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* 按钮 */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px dashed var(--gray-300);
+            color: var(--gray-500);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* 产品表格 */
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .product-table th {
+            background: var(--gray-50);
+            padding: 12px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .product-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-100);
+            vertical-align: middle;
+        }
+
+        .product-table input {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+        }
+
+        .product-table .num-input {
+            width: 100px;
+            text-align: right;
+        }
+
+        .product-table .amount {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .remove-row {
+            color: var(--danger);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .remove-row:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 4px;
+        }
+
+        /* 总计区域 */
+        .totals {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .total-row.grand {
+            border-top: 2px solid var(--gray-300);
+            margin-top: 8px;
+            padding-top: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* 快捷选择 */
+        .quick-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .quick-btn {
+            padding: 6px 12px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 标签页 */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 0;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.2s;
+            color: var(--gray-500);
+        }
+
+        .tab:hover {
+            color: var(--gray-700);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 客户/产品列表 */
+        .saved-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+        }
+
+        .saved-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-100);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .saved-item:last-child {
+            border-bottom: none;
+        }
+
+        .saved-item:hover {
+            background: var(--gray-50);
+        }
+
+        .saved-item-info h4 {
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+
+        .saved-item-info p {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+
+        .saved-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* 预览区域 */
+        .preview-container {
+            background: white;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .pi-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--gray-900);
+            padding-bottom: 20px;
+        }
+
+        .pi-header h1 {
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+        }
+
+        .pi-header .pi-no {
+            margin-top: 10px;
+            color: var(--gray-500);
+        }
+
+        .pi-parties {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .pi-party h3 {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .pi-party p {
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .pi-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .pi-table th, .pi-table td {
+            border: 1px solid var(--gray-300);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .pi-table th {
+            background: var(--gray-100);
+            font-weight: 600;
+        }
+
+        .pi-table .text-right {
+            text-align: right;
+        }
+
+        .pi-terms {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .pi-terms h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .pi-terms p {
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .pi-bank {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .pi-bank h3 {
+            margin-bottom: 12px;
+        }
+
+        /* 隐藏的页面 */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.2rem;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            padding: 4px;
+            color: var(--gray-500);
+        }
+
+        /* 提示 */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--gray-900);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* 打印样式 */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .preview-container, .preview-container * {
+                visibility: visible;
+            }
+            .preview-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none;
+                box-shadow: none;
+            }
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                padding: 16px;
+            }
+            .main-content {
+                padding: 16px;
+            }
+            .pi-parties {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <h1>PI Generator</h1>
+            <p class="subtitle">形式发票生成器</p>
+
+            <div class="nav-section">
+                <div class="nav-title">创建发票</div>
+                <div class="nav-item active" data-page="create">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    新建 PI
+                </div>
+                <div class="nav-item" data-page="preview">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    预览 & 打印
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title">数据管理</div>
+                <div class="nav-item" data-page="customers">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    客户管理
+                </div>
+                <div class="nav-item" data-page="products">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    产品库
+                </div>
+                <div class="nav-item" data-page="settings">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    卖方设置
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 创建PI页面 -->
+            <div id="page-create" class="page active">
+                <div class="page-header">
+                    <h2 class="page-title">新建形式发票</h2>
+                    <p class="page-desc">填写中文信息，自动生成英文PI</p>
+                </div>
+
+                <!-- PI基本信息 -->
+                <div class="card">
+                    <div class="card-title">发票信息 <span class="badge">Invoice Info</span></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>PI编号 <span class="en">PI No.</span></label>
+                            <input type="text" id="piNo" placeholder="例如: PI-2024-001">
+                        </div>
+                        <div class="form-group">
+                            <label>日期 <span class="en">Date</span></label>
+                            <input type="date" id="piDate">
+                        </div>
+                        <div class="form-group">
+                            <label>有效期 <span class="en">Valid Until</span></label>
+                            <input type="date" id="piValidDate">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 买方信息 -->
+                <div class="card">
+                    <div class="card-title">
+                        买方信息 <span class="badge">Buyer Info</span>
+                        <button class="btn btn-sm btn-secondary" onclick="showCustomerModal()">选择已保存客户</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>公司名称 <span class="en">Company</span></label>
+                            <input type="text" id="buyerCompany" placeholder="客户公司名称">
+                        </div>
+                        <div class="form-group">
+                            <label>联系人 <span class="en">Contact</span></label>
+                            <input type="text" id="buyerContact" placeholder="联系人姓名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>地址 <span class="en">Address</span></label>
+                        <textarea id="buyerAddress" rows="2" placeholder="详细地址"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>电话 <span class="en">Tel</span></label>
+                            <input type="text" id="buyerTel" placeholder="电话号码">
+                        </div>
+                        <div class="form-group">
+                            <label>邮箱 <span class="en">Email</span></label>
+                            <input type="email" id="buyerEmail" placeholder="邮箱地址">
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline" onclick="saveCurrentCustomer()">保存此客户到常用列表</button>
+                </div>
+
+                <!-- 产品明细 -->
+                <div class="card">
+                    <div class="card-title">
+                        产品明细 <span class="badge">Product Details</span>
+                        <button class="btn btn-sm btn-secondary" onclick="showProductModal()">从产品库添加</button>
+                    </div>
+                    
+                    <table class="product-table" id="productTable">
+                        <thead>
+                            <tr>
+                                <th style="width:30%">产品名称 / Description</th>
+                                <th style="width:15%">规格 / Spec</th>
+                                <th style="width:12%">数量 / Qty</th>
+                                <th style="width:10%">单位 / Unit</th>
+                                <th style="width:13%">单价 / Price</th>
+                                <th style="width:13%">金额 / Amount</th>
+                                <th style="width:7%"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="productRows">
+                            <!-- 动态添加 -->
+                        </tbody>
+                    </table>
+                    
+                    <button class="btn btn-outline" onclick="addProductRow()" style="width:100%">+ 添加产品行</button>
+
+                    <div class="totals">
+                        <div class="total-row">
+                            <span>小计 Subtotal</span>
+                            <span id="subtotal">USD 0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span>运费 Shipping</span>
+                            <span>
+                                <input type="number" id="shipping" value="0" style="width:120px;text-align:right" onchange="calculateTotals()">
+                            </span>
+                        </div>
+                        <div class="total-row">
+                            <span>其他费用 Other Charges</span>
+                            <span>
+                                <input type="number" id="otherCharges" value="0" style="width:120px;text-align:right" onchange="calculateTotals()">
+                            </span>
+                        </div>
+                        <div class="total-row grand">
+                            <span>总计 TOTAL</span>
+                            <span id="grandTotal">USD 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 贸易条款 -->
+                <div class="card">
+                    <div class="card-title">贸易条款 <span class="badge">Trade Terms</span></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>贸易方式 <span class="en">Trade Term</span></label>
+                            <select id="tradeTerm">
+                                <option value="FOB">FOB (离岸价)</option>
+                                <option value="CIF">CIF (到岸价)</option>
+                                <option value="EXW">EXW (工厂交货)</option>
+                                <option value="DDP">DDP (完税后交货)</option>
+                                <option value="CFR">CFR (成本加运费)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>装运港 <span class="en">Port of Loading</span></label>
+                            <input type="text" id="portOfLoading" placeholder="例如: Shanghai, China">
+                        </div>
+                        <div class="form-group">
+                            <label>目的港 <span class="en">Port of Destination</span></label>
+                            <input type="text" id="portOfDest" placeholder="例如: Los Angeles, USA">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>付款方式 <span class="en">Payment Term</span></label>
+                            <select id="paymentTerm">
+                                <option value="T/T 100% in advance">T/T 100% 预付</option>
+                                <option value="T/T 30% deposit, 70% before shipment">T/T 30%订金, 70%发货前付清</option>
+                                <option value="T/T 30% deposit, 70% against B/L copy">T/T 30%订金, 70%见提单副本</option>
+                                <option value="L/C at sight">L/C 即期信用证</option>
+                                <option value="D/P at sight">D/P 即期付款交单</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>交货期 <span class="en">Delivery Time</span></label>
+                            <input type="text" id="deliveryTime" placeholder="例如: 30 days after deposit">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>备注 <span class="en">Remarks</span></label>
+                        <textarea id="remarks" rows="3" placeholder="其他需要说明的事项"></textarea>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div style="display:flex;gap:12px;justify-content:flex-end">
+                    <button class="btn btn-secondary" onclick="clearForm()">清空表单</button>
+                    <button class="btn btn-primary" onclick="generatePreview()">生成预览</button>
+                </div>
+            </div>
+
+            <!-- 预览页面 -->
+            <div id="page-preview" class="page">
+                <div class="page-header">
+                    <h2 class="page-title">预览 & 打印</h2>
+                    <p class="page-desc">检查PI内容，确认无误后打印或导出</p>
+                </div>
+
+                <div style="margin-bottom:20px;display:flex;gap:12px">
+                    <button class="btn btn-primary" onclick="window.print()">打印 / 导出PDF</button>
+                    <button class="btn btn-secondary" onclick="switchPage('create')">返回编辑</button>
+                </div>
+
+                <div class="preview-container" id="previewContent">
+                    <p style="color:var(--gray-500);text-align:center;padding:60px 0">请先填写表单并点击"生成预览"</p>
+                </div>
+            </div>
+
+            <!-- 客户管理页面 -->
+            <div id="page-customers" class="page">
+                <div class="page-header">
+                    <h2 class="page-title">客户管理</h2>
+                    <p class="page-desc">保存常用客户信息，下次快速选择</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">已保存的客户</div>
+                    <div class="saved-list" id="customerList">
+                        <p style="padding:20px;color:var(--gray-500);text-align:center">暂无保存的客户</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品库页面 -->
+            <div id="page-products" class="page">
+                <div class="page-header">
+                    <h2 class="page-title">产品库</h2>
+                    <p class="page-desc">管理常用产品，快速添加到PI</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        添加新产品
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>中文名称</label>
+                            <input type="text" id="newProductNameCn" placeholder="产品中文名">
+                        </div>
+                        <div class="form-group">
+                            <label>英文名称</label>
+                            <input type="text" id="newProductNameEn" placeholder="Product English Name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>规格</label>
+                            <input type="text" id="newProductSpec" placeholder="规格型号">
+                        </div>
+                        <div class="form-group">
+                            <label>单位</label>
+                            <input type="text" id="newProductUnit" placeholder="PCS/SET/KG">
+                        </div>
+                        <div class="form-group">
+                            <label>参考单价 (USD)</label>
+                            <input type="number" id="newProductPrice" placeholder="0.00" step="0.01">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveProduct()">保存到产品库</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">已保存的产品</div>
+                    <div class="saved-list" id="productList">
+                        <p style="padding:20px;color:var(--gray-500);text-align:center">暂无保存的产品</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 卖方设置页面 -->
+            <div id="page-settings" class="page">
+                <div class="page-header">
+                    <h2 class="page-title">卖方设置</h2>
+                    <p class="page-desc">设置您的公司信息和银行账户</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">公司信息 <span class="badge">Seller Info</span></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>公司名称（中文）</label>
+                            <input type="text" id="sellerCompanyCn" placeholder="您的公司中文名">
+                        </div>
+                        <div class="form-group">
+                            <label>公司名称（英文）</label>
+                            <input type="text" id="sellerCompanyEn" placeholder="Your Company English Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>公司地址（英文）</label>
+                        <textarea id="sellerAddress" rows="2" placeholder="Company Address in English"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>联系人</label>
+                            <input type="text" id="sellerContact" placeholder="联系人姓名">
+                        </div>
+                        <div class="form-group">
+                            <label>电话</label>
+                            <input type="text" id="sellerTel" placeholder="电话号码">
+                        </div>
+                        <div class="form-group">
+                            <label>邮箱</label>
+                            <input type="email" id="sellerEmail" placeholder="邮箱地址">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">银行账户信息 <span class="badge">Bank Details</span></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>收款人名称 <span class="en">Beneficiary Name</span></label>
+                            <input type="text" id="bankBeneficiary" placeholder="与银行账户一致的英文名">
+                        </div>
+                        <div class="form-group">
+                            <label>银行名称 <span class="en">Bank Name</span></label>
+                            <input type="text" id="bankName" placeholder="Bank of China">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>银行账号 <span class="en">Account No.</span></label>
+                            <input type="text" id="bankAccount" placeholder="银行账号">
+                        </div>
+                        <div class="form-group">
+                            <label>SWIFT代码 <span class="en">SWIFT Code</span></label>
+                            <input type="text" id="bankSwift" placeholder="BKCHCNBJ">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>银行地址 <span class="en">Bank Address</span></label>
+                        <textarea id="bankAddress" rows="2" placeholder="银行地址（英文）"></textarea>
+                    </div>
+                </div>
+
+                <button class="btn btn-success" onclick="saveSettings()">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 客户选择模态框 -->
+    <div class="modal" id="customerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>选择客户</h3>
+                <span class="modal-close" onclick="closeModal('customerModal')">&times;</span>
+            </div>
+            <div id="customerModalList"></div>
+        </div>
+    </div>
+
+    <!-- 产品选择模态框 -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>从产品库添加</h3>
+                <span class="modal-close" onclick="closeModal('productModal')">&times;</span>
+            </div>
+            <div id="productModalList"></div>
+        </div>
+    </div>
+
+    <!-- Toast提示 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 数据存储
+        let customers = JSON.parse(localStorage.getItem('pi_customers') || '[]');
+        let products = JSON.parse(localStorage.getItem('pi_products') || '[]');
+        let settings = JSON.parse(localStorage.getItem('pi_settings') || '{}');
+        let productRowId = 0;
+
+        // 常用单位
+        const UNITS = ['PCS', 'SET', 'KG', 'G', 'L', 'ML', 'M', 'BOX', 'CTN', 'PAIR'];
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 导航切换
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.dataset.page;
+                    switchPage(page);
+                });
+            });
+
+            // 设置默认日期
+            document.getElementById('piDate').value = new Date().toISOString().split('T')[0];
+            
+            // 设置默认有效期（30天后）
+            const validDate = new Date();
+            validDate.setDate(validDate.getDate() + 30);
+            document.getElementById('piValidDate').value = validDate.toISOString().split('T')[0];
+
+            // 生成默认PI编号
+            document.getElementById('piNo').value = `PI-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`;
+
+            // 添加初始产品行
+            addProductRow();
+
+            // 加载设置
+            loadSettings();
+
+            // 刷新列表
+            refreshCustomerList();
+            refreshProductList();
+        });
+
+        // 切换页面
+        function switchPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(`page-${page}`).classList.add('active');
+            document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+        }
+
+        // 添加产品行
+        function addProductRow(data = {}) {
+            productRowId++;
+            const tbody = document.getElementById('productRows');
+            const row = document.createElement('tr');
+            row.id = `row-${productRowId}`;
+            row.innerHTML = `
+                <td>
+                    <input type="text" class="prod-name" placeholder="产品名称" value="${data.name || ''}">
+                </td>
+                <td>
+                    <input type="text" class="prod-spec" placeholder="规格" value="${data.spec || ''}">
+                </td>
+                <td>
+                    <input type="number" class="prod-qty num-input" placeholder="0" value="${data.qty || ''}" min="0" onchange="calculateRow(${productRowId})">
+                </td>
+                <td>
+                    <select class="prod-unit">
+                        ${UNITS.map(u => `<option value="${u}" ${data.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="prod-price num-input" placeholder="0.00" value="${data.price || ''}" min="0" step="0.01" onchange="calculateRow(${productRowId})">
+                </td>
+                <td class="amount" id="amount-${productRowId}">${data.amount ? formatMoney(data.amount) : '0.00'}</td>
+                <td>
+                    <span class="remove-row" onclick="removeRow(${productRowId})">&#10005;</span>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        // 计算单行金额
+        function calculateRow(id) {
+            const row = document.getElementById(`row-${id}`);
+            if (!row) return;
+            
+            const qty = parseFloat(row.querySelector('.prod-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.prod-price').value) || 0;
+            const amount = qty * price;
+            
+            document.getElementById(`amount-${id}`).textContent = formatMoney(amount);
+            calculateTotals();
+        }
+
+        // 计算总计
+        function calculateTotals() {
+            let subtotal = 0;
+            document.querySelectorAll('#productRows tr').forEach(row => {
+                const qty = parseFloat(row.querySelector('.prod-qty')?.value) || 0;
+                const price = parseFloat(row.querySelector('.prod-price')?.value) || 0;
+                subtotal += qty * price;
+            });
+
+            const shipping = parseFloat(document.getElementById('shipping').value) || 0;
+            const other = parseFloat(document.getElementById('otherCharges').value) || 0;
+            const total = subtotal + shipping + other;
+
+            document.getElementById('subtotal').textContent = `USD ${formatMoney(subtotal)}`;
+            document.getElementById('grandTotal').textContent = `USD ${formatMoney(total)}`;
+        }
+
+        // 删除产品行
+        function removeRow(id) {
+            const row = document.getElementById(`row-${id}`);
+            if (row) {
+                row.remove();
+                calculateTotals();
+            }
+        }
+
+        // 格式化金额
+        function formatMoney(amount) {
+            return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // 保存当前客户
+        function saveCurrentCustomer() {
+            const customer = {
+                id: Date.now(),
+                company: document.getElementById('buyerCompany').value,
+                contact: document.getElementById('buyerContact').value,
+                address: document.getElementById('buyerAddress').value,
+                tel: document.getElementById('buyerTel').value,
+                email: document.getElementById('buyerEmail').value
+            };
+
+            if (!customer.company) {
+                showToast('请先填写公司名称');
+                return;
+            }
+
+            customers.push(customer);
+            localStorage.setItem('pi_customers', JSON.stringify(customers));
+            refreshCustomerList();
+            showToast('客户已保存');
+        }
+
+        // 刷新客户列表
+        function refreshCustomerList() {
+            const list = document.getElementById('customerList');
+            if (customers.length === 0) {
+                list.innerHTML = '<p style="padding:20px;color:var(--gray-500);text-align:center">暂无保存的客户</p>';
+                return;
+            }
+
+            list.innerHTML = customers.map(c => `
+                <div class="saved-item">
+                    <div class="saved-item-info">
+                        <h4>${c.company}</h4>
+                        <p>${c.contact || ''} ${c.tel || ''}</p>
+                    </div>
+                    <div class="saved-item-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="loadCustomer(${c.id})">使用</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteCustomer(${c.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 加载客户信息
+        function loadCustomer(id) {
+            const customer = customers.find(c => c.id === id);
+            if (customer) {
+                document.getElementById('buyerCompany').value = customer.company || '';
+                document.getElementById('buyerContact').value = customer.contact || '';
+                document.getElementById('buyerAddress').value = customer.address || '';
+                document.getElementById('buyerTel').value = customer.tel || '';
+                document.getElementById('buyerEmail').value = customer.email || '';
+                closeModal('customerModal');
+                showToast('已加载客户信息');
+            }
+        }
+
+        // 删除客户
+        function deleteCustomer(id) {
+            customers = customers.filter(c => c.id !== id);
+            localStorage.setItem('pi_customers', JSON.stringify(customers));
+            refreshCustomerList();
+            showToast('客户已删除');
+        }
+
+        // 显示客户选择模态框
+        function showCustomerModal() {
+            const list = document.getElementById('customerModalList');
+            if (customers.length === 0) {
+                list.innerHTML = '<p style="padding:20px;color:var(--gray-500);text-align:center">暂无保存的客户</p>';
+            } else {
+                list.innerHTML = customers.map(c => `
+                    <div class="saved-item" onclick="loadCustomer(${c.id})">
+                        <div class="saved-item-info">
+                            <h4>${c.company}</h4>
+                            <p>${c.contact || ''} ${c.tel || ''}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('customerModal').classList.add('show');
+        }
+
+        // 保存产品
+        function saveProduct() {
+            const product = {
+                id: Date.now(),
+                nameCn: document.getElementById('newProductNameCn').value,
+                nameEn: document.getElementById('newProductNameEn').value,
+                spec: document.getElementById('newProductSpec').value,
+                unit: document.getElementById('newProductUnit').value || 'PCS',
+                price: parseFloat(document.getElementById('newProductPrice').value) || 0
+            };
+
+            if (!product.nameCn && !product.nameEn) {
+                showToast('请填写产品名称');
+                return;
+            }
+
+            products.push(product);
+            localStorage.setItem('pi_products', JSON.stringify(products));
+            refreshProductList();
+            
+            // 清空表单
+            document.getElementById('newProductNameCn').value = '';
+            document.getElementById('newProductNameEn').value = '';
+            document.getElementById('newProductSpec').value = '';
+            document.getElementById('newProductUnit').value = '';
+            document.getElementById('newProductPrice').value = '';
+            
+            showToast('产品已保存');
+        }
+
+        // 刷新产品列表
+        function refreshProductList() {
+            const list = document.getElementById('productList');
+            if (products.length === 0) {
+                list.innerHTML = '<p style="padding:20px;color:var(--gray-500);text-align:center">暂无保存的产品</p>';
+                return;
+            }
+
+            list.innerHTML = products.map(p => `
+                <div class="saved-item">
+                    <div class="saved-item-info">
+                        <h4>${p.nameEn || p.nameCn}</h4>
+                        <p>${p.nameCn ? p.nameCn + ' | ' : ''}${p.spec || ''} | USD ${formatMoney(p.price)}</p>
+                    </div>
+                    <div class="saved-item-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="addProductFromLib(${p.id})">添加</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 从产品库添加产品
+        function addProductFromLib(id) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                addProductRow({
+                    name: product.nameEn || product.nameCn,
+                    spec: product.spec,
+                    unit: product.unit,
+                    price: product.price
+                });
+                closeModal('productModal');
+                showToast('产品已添加');
+            }
+        }
+
+        // 删除产品
+        function deleteProduct(id) {
+            products = products.filter(p => p.id !== id);
+            localStorage.setItem('pi_products', JSON.stringify(products));
+            refreshProductList();
+            showToast('产品已删除');
+        }
+
+        // 显示产品选择模态框
+        function showProductModal() {
+            const list = document.getElementById('productModalList');
+            if (products.length === 0) {
+                list.innerHTML = '<p style="padding:20px;color:var(--gray-500);text-align:center">暂无保存的产品，请先在产品库添加</p>';
+            } else {
+                list.innerHTML = products.map(p => `
+                    <div class="saved-item" onclick="addProductFromLib(${p.id})">
+                        <div class="saved-item-info">
+                            <h4>${p.nameEn || p.nameCn}</h4>
+                            <p>${p.spec || ''} | USD ${formatMoney(p.price)}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('productModal').classList.add('show');
+        }
+
+        // 保存设置
+        function saveSettings() {
+            settings = {
+                sellerCompanyCn: document.getElementById('sellerCompanyCn').value,
+                sellerCompanyEn: document.getElementById('sellerCompanyEn').value,
+                sellerAddress: document.getElementById('sellerAddress').value,
+                sellerContact: document.getElementById('sellerContact').value,
+                sellerTel: document.getElementById('sellerTel').value,
+                sellerEmail: document.getElementById('sellerEmail').value,
+                bankBeneficiary: document.getElementById('bankBeneficiary').value,
+                bankName: document.getElementById('bankName').value,
+                bankAccount: document.getElementById('bankAccount').value,
+                bankSwift: document.getElementById('bankSwift').value,
+                bankAddress: document.getElementById('bankAddress').value
+            };
+            localStorage.setItem('pi_settings', JSON.stringify(settings));
+            showToast('设置已保存');
+        }
+
+        // 加载设置
+        function loadSettings() {
+            if (settings.sellerCompanyCn) document.getElementById('sellerCompanyCn').value = settings.sellerCompanyCn;
+            if (settings.sellerCompanyEn) document.getElementById('sellerCompanyEn').value = settings.sellerCompanyEn;
+            if (settings.sellerAddress) document.getElementById('sellerAddress').value = settings.sellerAddress;
+            if (settings.sellerContact) document.getElementById('sellerContact').value = settings.sellerContact;
+            if (settings.sellerTel) document.getElementById('sellerTel').value = settings.sellerTel;
+            if (settings.sellerEmail) document.getElementById('sellerEmail').value = settings.sellerEmail;
+            if (settings.bankBeneficiary) document.getElementById('bankBeneficiary').value = settings.bankBeneficiary;
+            if (settings.bankName) document.getElementById('bankName').value = settings.bankName;
+            if (settings.bankAccount) document.getElementById('bankAccount').value = settings.bankAccount;
+            if (settings.bankSwift) document.getElementById('bankSwift').value = settings.bankSwift;
+            if (settings.bankAddress) document.getElementById('bankAddress').value = settings.bankAddress;
+        }
+
+        // 生成预览
+        function generatePreview() {
+            // 收集产品数据
+            const productData = [];
+            let subtotal = 0;
+            document.querySelectorAll('#productRows tr').forEach(row => {
+                const name = row.querySelector('.prod-name')?.value || '';
+                const spec = row.querySelector('.prod-spec')?.value || '';
+                const qty = parseFloat(row.querySelector('.prod-qty')?.value) || 0;
+                const unit = row.querySelector('.prod-unit')?.value || 'PCS';
+                const price = parseFloat(row.querySelector('.prod-price')?.value) || 0;
+                const amount = qty * price;
+                
+                if (name || qty > 0) {
+                    productData.push({ name, spec, qty, unit, price, amount });
+                    subtotal += amount;
+                }
+            });
+
+            const shipping = parseFloat(document.getElementById('shipping').value) || 0;
+            const other = parseFloat(document.getElementById('otherCharges').value) || 0;
+            const total = subtotal + shipping + other;
+
+            // 生成HTML
+            const preview = document.getElementById('previewContent');
+            preview.innerHTML = `
+                <div class="pi-header">
+                    <h1>PROFORMA INVOICE</h1>
+                    <p class="pi-no">PI No: ${document.getElementById('piNo').value}</p>
+                    <p>Date: ${document.getElementById('piDate').value} | Valid Until: ${document.getElementById('piValidDate').value}</p>
+                </div>
+
+                <div class="pi-parties">
+                    <div class="pi-party">
+                        <h3>Seller / 卖方</h3>
+                        <p>
+                            <strong>${settings.sellerCompanyEn || 'Your Company Name'}</strong><br>
+                            ${settings.sellerAddress || 'Company Address'}<br>
+                            ${settings.sellerContact ? 'Contact: ' + settings.sellerContact + '<br>' : ''}
+                            ${settings.sellerTel ? 'Tel: ' + settings.sellerTel + '<br>' : ''}
+                            ${settings.sellerEmail ? 'Email: ' + settings.sellerEmail : ''}
+                        </p>
+                    </div>
+                    <div class="pi-party">
+                        <h3>Buyer / 买方</h3>
+                        <p>
+                            <strong>${document.getElementById('buyerCompany').value || 'Buyer Company'}</strong><br>
+                            ${document.getElementById('buyerAddress').value || ''}<br>
+                            ${document.getElementById('buyerContact').value ? 'Contact: ' + document.getElementById('buyerContact').value + '<br>' : ''}
+                            ${document.getElementById('buyerTel').value ? 'Tel: ' + document.getElementById('buyerTel').value + '<br>' : ''}
+                            ${document.getElementById('buyerEmail').value ? 'Email: ' + document.getElementById('buyerEmail').value : ''}
+                        </p>
+                    </div>
+                </div>
+
+                <table class="pi-table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Description</th>
+                            <th>Specification</th>
+                            <th class="text-right">Qty</th>
+                            <th>Unit</th>
+                            <th class="text-right">Unit Price (USD)</th>
+                            <th class="text-right">Amount (USD)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${productData.map((p, i) => `
+                            <tr>
+                                <td>${i + 1}</td>
+                                <td>${p.name}</td>
+                                <td>${p.spec}</td>
+                                <td class="text-right">${p.qty}</td>
+                                <td>${p.unit}</td>
+                                <td class="text-right">${formatMoney(p.price)}</td>
+                                <td class="text-right">${formatMoney(p.amount)}</td>
+                            </tr>
+                        `).join('')}
+                        <tr>
+                            <td colspan="6" class="text-right"><strong>Subtotal</strong></td>
+                            <td class="text-right">${formatMoney(subtotal)}</td>
+                        </tr>
+                        ${shipping > 0 ? `
+                        <tr>
+                            <td colspan="6" class="text-right">Shipping</td>
+                            <td class="text-right">${formatMoney(shipping)}</td>
+                        </tr>
+                        ` : ''}
+                        ${other > 0 ? `
+                        <tr>
+                            <td colspan="6" class="text-right">Other Charges</td>
+                            <td class="text-right">${formatMoney(other)}</td>
+                        </tr>
+                        ` : ''}
+                        <tr>
+                            <td colspan="6" class="text-right"><strong>TOTAL</strong></td>
+                            <td class="text-right"><strong>USD ${formatMoney(total)}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="pi-terms">
+                    <h3>Terms & Conditions</h3>
+                    <p><strong>Trade Term:</strong> ${document.getElementById('tradeTerm').value}</p>
+                    <p><strong>Port of Loading:</strong> ${document.getElementById('portOfLoading').value || 'N/A'}</p>
+                    <p><strong>Port of Destination:</strong> ${document.getElementById('portOfDest').value || 'N/A'}</p>
+                    <p><strong>Payment Term:</strong> ${document.getElementById('paymentTerm').value}</p>
+                    <p><strong>Delivery Time:</strong> ${document.getElementById('deliveryTime').value || 'N/A'}</p>
+                    ${document.getElementById('remarks').value ? `<p><strong>Remarks:</strong> ${document.getElementById('remarks').value}</p>` : ''}
+                </div>
+
+                <div class="pi-bank">
+                    <h3>Bank Details / 银行信息</h3>
+                    <p><strong>Beneficiary:</strong> ${settings.bankBeneficiary || 'N/A'}</p>
+                    <p><strong>Bank Name:</strong> ${settings.bankName || 'N/A'}</p>
+                    <p><strong>Account No.:</strong> ${settings.bankAccount || 'N/A'}</p>
+                    <p><strong>SWIFT Code:</strong> ${settings.bankSwift || 'N/A'}</p>
+                    <p><strong>Bank Address:</strong> ${settings.bankAddress || 'N/A'}</p>
+                </div>
+
+                <div style="margin-top:40px;display:flex;justify-content:space-between">
+                    <div style="text-align:center;width:45%">
+                        <div style="border-top:1px solid #333;padding-top:10px;margin-top:60px">
+                            Seller's Signature & Stamp
+                        </div>
+                    </div>
+                    <div style="text-align:center;width:45%">
+                        <div style="border-top:1px solid #333;padding-top:10px;margin-top:60px">
+                            Buyer's Signature & Stamp
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            switchPage('preview');
+            showToast('预览已生成');
+        }
+
+        // 清空表单
+        function clearForm() {
+            if (confirm('确定要清空所有表单内容吗？')) {
+                document.getElementById('buyerCompany').value = '';
+                document.getElementById('buyerContact').value = '';
+                document.getElementById('buyerAddress').value = '';
+                document.getElementById('buyerTel').value = '';
+                document.getElementById('buyerEmail').value = '';
+                document.getElementById('productRows').innerHTML = '';
+                document.getElementById('shipping').value = 0;
+                document.getElementById('otherCharges').value = 0;
+                document.getElementById('portOfLoading').value = '';
+                document.getElementById('portOfDest').value = '';
+                document.getElementById('deliveryTime').value = '';
+                document.getElementById('remarks').value = '';
+                
+                productRowId = 0;
+                addProductRow();
+                calculateTotals();
+                showToast('表单已清空');
+            }
+        }
+
+        // 关闭模态框
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // 点击模态框背景关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('show');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

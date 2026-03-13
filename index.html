@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PI Generator - 形式发票生成器</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23171717'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-size='28' fill='white' font-family='Arial'%3EPI%3C/text%3E%3C/svg%3E">
     <style>
         * {
             margin: 0;
@@ -12,25 +13,29 @@
         }
 
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
+            --primary: #0f0f10;
+            --primary-dark: #000000;
+            --success: #1f2937;
+            --warning: #4b5563;
+            --danger: #b91c1c;
+            --brand-red: #d70015;
+            --gray-50: #fbfbfc;
+            --gray-100: #f5f5f7;
+            --gray-150: #ededf0;
             --gray-200: #e5e7eb;
             --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
             --gray-500: #6b7280;
             --gray-700: #374151;
             --gray-900: #111827;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
             background: var(--gray-100);
             color: var(--gray-900);
-            line-height: 1.6;
+            line-height: 1.45;
         }
 
         .app-container {
@@ -41,21 +46,48 @@
         /* 侧边栏 */
         .sidebar {
             width: 280px;
-            background: var(--gray-900);
+            background: #0c0c0d;
             color: white;
-            padding: 20px;
+            padding: 24px 18px;
             flex-shrink: 0;
         }
 
+        .brand-logo-wrap {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .brand-wordmark {
+            font-size: 1.08rem;
+            font-weight: 600;
+            letter-spacing: 0.24em;
+            color: #f8f8fa;
+            line-height: 1;
+        }
+
+        .brand-wordmark .brand-tail {
+            color: var(--brand-red);
+        }
+
+        .brand-site {
+            margin-top: 8px;
+            font-size: 0.74rem;
+            color: rgba(255,255,255,0.62);
+            letter-spacing: 0.02em;
+        }
+
         .sidebar h1 {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
         }
 
         .sidebar .subtitle {
-            color: var(--gray-500);
-            font-size: 0.85rem;
-            margin-bottom: 30px;
+            color: rgba(255,255,255,0.58);
+            font-size: 0.8rem;
+            margin-bottom: 28px;
         }
 
         .nav-section {
@@ -63,29 +95,32 @@
         }
 
         .nav-title {
-            color: var(--gray-500);
-            font-size: 0.75rem;
+            color: rgba(255,255,255,0.48);
+            font-size: 0.72rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.08em;
             margin-bottom: 12px;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 10px 11px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s;
             margin-bottom: 4px;
+            color: rgba(255,255,255,0.84);
+            font-size: 0.92rem;
         }
 
         .nav-item:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
         }
 
         .nav-item.active {
-            background: var(--primary);
+            background: rgba(255,255,255,0.16);
+            color: #ffffff;
         }
 
         .nav-item svg {
@@ -97,8 +132,9 @@
         /* 主内容区 */
         .main-content {
             flex: 1;
-            padding: 24px;
+            padding: 30px;
             overflow-y: auto;
+            max-width: 1440px;
         }
 
         .page-header {
@@ -106,32 +142,185 @@
         }
 
         .page-title {
-            font-size: 1.75rem;
-            font-weight: 600;
+            font-size: 1.55rem;
+            font-weight: 620;
             color: var(--gray-900);
+            letter-spacing: -0.02em;
         }
 
         .page-desc {
             color: var(--gray-500);
+            margin-top: 6px;
+            font-size: 0.95rem;
+        }
+
+        .editor-paper {
+            background: #ffffff;
+            border: 1px solid #d6dae2;
+            border-radius: 12px;
+            padding: 30px 30px 24px;
+            max-width: 1120px;
+            box-shadow: 0 20px 40px rgba(17, 24, 39, 0.08);
+        }
+
+        .editor-doc-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            border-bottom: 2px solid #111827;
+            padding-bottom: 14px;
+            margin-bottom: 22px;
+        }
+
+        .editor-doc-title {
+            font-size: 1.8rem;
+            letter-spacing: -0.02em;
+            font-weight: 640;
+            line-height: 1.15;
+        }
+
+        .editor-doc-sub {
+            margin-top: 6px;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        .editor-doc-meta {
+            flex: 1;
+            text-align: right;
+            width: 100%;
+        }
+
+        .editor-doc-meta-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            width: 100%;
+            column-gap: 14px;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .editor-doc-meta-lines {
+            text-align: right;
+            justify-self: end;
+            margin-left: auto;
+        }
+
+        .editor-doc-meta-lines .pi-no-line {
+            font-size: 1.05rem;
+            color: #6b7280;
+        }
+
+        .editor-doc-meta-lines .date-line {
+            font-size: 0.98rem;
             margin-top: 4px;
+            color: #111827;
+        }
+
+        .editor-doc-barcode-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            width: 228px;
+            justify-self: end;
+            margin-left: auto;
+        }
+
+        #page-create .card {
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 18px 0;
+            margin: 0;
+        }
+
+        #page-create .card:last-of-type {
+            border-bottom: none;
+        }
+
+        #page-create .card-title {
+            font-size: 0.96rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--gray-700);
+        }
+
+        .editor-actions {
+            margin-top: 22px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .info-summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .info-summary {
+            border: 1px solid #e4e7ee;
+            border-radius: 10px;
+            padding: 12px 14px;
+            background: #fafbfc;
+        }
+
+        .info-summary h4 {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+
+        .info-summary p {
+            font-size: 0.88rem;
+            color: #1f2937;
+            line-height: 1.55;
+            margin: 2px 0;
+        }
+
+        .receive-mode-switch {
+            display: inline-flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .receive-mode-btn {
+            border: 1px solid #d1d5db;
+            background: #ffffff;
+            color: #374151;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            cursor: pointer;
+        }
+
+        .receive-mode-btn.active {
+            background: #111827;
+            color: #ffffff;
+            border-color: #111827;
         }
 
         /* 卡片 */
         .card {
             background: white;
-            border-radius: 12px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 24px 24px 20px;
             margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e3e5ea;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
         }
 
         .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 20px;
+            font-size: 1.02rem;
+            font-weight: 620;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            letter-spacing: -0.01em;
         }
 
         .card-title .badge {
@@ -172,16 +361,17 @@
         input, select, textarea {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid var(--gray-300);
-            border-radius: 8px;
-            font-size: 0.95rem;
+            border: 1px solid #d9dce3;
+            border-radius: 10px;
+            font-size: 0.9rem;
             transition: all 0.2s;
+            background: #fcfcfd;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #a0a5b1;
+            box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.08);
         }
 
         textarea {
@@ -192,15 +382,16 @@
         /* 按钮 */
         .btn {
             padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 500;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            font-size: 0.92rem;
+            font-weight: 560;
             cursor: pointer;
             transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            letter-spacing: -0.01em;
         }
 
         .btn-primary {
@@ -209,7 +400,7 @@
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background: #2a2a2c;
         }
 
         .btn-success {
@@ -218,12 +409,13 @@
         }
 
         .btn-secondary {
-            background: var(--gray-200);
-            color: var(--gray-700);
+            background: #ffffff;
+            color: #1f2937;
+            border: 1px solid #d6dae2;
         }
 
         .btn-secondary:hover {
-            background: var(--gray-300);
+            background: #f3f4f6;
         }
 
         .btn-danger {
@@ -238,7 +430,7 @@
 
         .btn-outline {
             background: transparent;
-            border: 1px dashed var(--gray-300);
+            border: 1px dashed #c5cad4;
             color: var(--gray-500);
         }
 
@@ -250,34 +442,143 @@
         /* 产品表格 */
         .product-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-bottom: 16px;
+            table-layout: fixed;
         }
 
         .product-table th {
-            background: var(--gray-50);
-            padding: 12px;
+            background: transparent;
+            padding: 8px 12px 10px;
             text-align: left;
             font-weight: 500;
             font-size: 0.85rem;
-            color: var(--gray-500);
-            border-bottom: 1px solid var(--gray-200);
+            color: #1f2937;
+            border: none;
+            border-bottom: 1px solid var(--gray-300);
         }
 
         .product-table td {
-            padding: 12px;
-            border-bottom: 1px solid var(--gray-100);
+            padding: 9px 12px 11px;
+            border: none;
+            border-bottom: 1px solid var(--gray-200);
             vertical-align: middle;
         }
 
         .product-table input {
-            padding: 8px 10px;
+            padding: 6px 2px;
             font-size: 0.9rem;
+            border: none;
+            border-bottom: 1px solid #cfd4dc;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .product-table input:focus {
+            border-color: #111827;
+            box-shadow: none;
+        }
+
+        .product-table select {
+            padding: 6px 2px;
+            border: none;
+            border-bottom: 1px solid #cfd4dc;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .product-table select:focus {
+            border-color: #111827;
+            box-shadow: none;
         }
 
         .product-table .num-input {
             width: 100px;
             text-align: right;
+        }
+
+        .row-picker {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--gray-900);
+            cursor: pointer;
+        }
+
+        .bulk-toolbar {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 14px;
+            padding: 12px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+        }
+
+        .bulk-toolbar .bulk-title {
+            font-size: 0.84rem;
+            color: var(--gray-700);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .bulk-fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .quick-flavor-import {
+            margin: 12px 0 16px;
+            padding: 12px;
+            border: 1px solid #e3e6ed;
+            border-radius: 10px;
+            background: #fafbfd;
+        }
+
+        .quick-flavor-import .title {
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .quick-flavor-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            justify-content: flex-end;
+        }
+
+        .bulk-toolbar .bulk-input {
+            width: 140px;
+        }
+
+        .bulk-toolbar .bulk-scope {
+            width: 160px;
+        }
+
+        .row-add-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .row-add-controls input {
+            width: 120px;
         }
 
         .product-table .amount {
@@ -424,96 +725,889 @@
         /* 预览区域 */
         .preview-container {
             background: white;
-            border: 1px solid var(--gray-300);
-            border-radius: 8px;
-            padding: 40px;
+            border: 1px solid #d9dde5;
+            border-radius: 10px;
+            padding: 38px 40px;
             max-width: 800px;
             margin: 0 auto;
+            box-shadow: 0 12px 24px rgba(17, 24, 39, 0.06);
         }
 
         .pi-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--gray-900);
-            padding-bottom: 20px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e2e6ed;
+        }
+
+        .pi-brand-block {
+            min-width: 240px;
+        }
+
+        .pi-brandmark {
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            line-height: 1;
+        }
+
+        .pi-brandmark .brand-tail {
+            color: #ff0000;
+        }
+
+        .pi-brand-site {
+            margin-top: 7px;
+            font-size: 0.74rem;
+            color: #6b7280;
+            letter-spacing: 0.01em;
+        }
+
+        .pi-header-main {
+            flex: 1;
+            text-align: right;
         }
 
         .pi-header h1 {
-            font-size: 1.8rem;
-            letter-spacing: 2px;
+            font-size: 2.26rem;
+            letter-spacing: 0.02em;
+            line-height: 1;
+            margin-bottom: 8px;
+            color: #111827;
         }
 
-        .pi-header .pi-no {
-            margin-top: 10px;
-            color: var(--gray-500);
+        .pi-meta-line {
+            color: #4b5563;
+            font-size: 0.94rem;
+            line-height: 1.5;
+        }
+
+        .pi-meta-line .meta-strong {
+            color: #111827;
+            font-weight: 700;
         }
 
         .pi-parties {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 30px;
+            gap: 18px;
+            margin-bottom: 14px;
+        }
+
+        .pi-party {
+            border: none;
+            padding-top: 2px;
         }
 
         .pi-party h3 {
-            font-size: 0.9rem;
-            color: var(--gray-500);
-            margin-bottom: 8px;
+            font-size: 0.72rem;
+            color: #6b7280;
+            margin: 0;
+            padding: 0 0 8px;
             text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            border-bottom: 1px solid #e4e8ee;
         }
 
-        .pi-party p {
-            font-size: 0.95rem;
-            line-height: 1.8;
+        .pi-party .pi-party-body {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding: 9px 0 0;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .pi-party .party-company {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .pi-party .party-address {
+            margin-top: 4px;
+            color: #374151;
+        }
+
+        .pi-contact-grid {
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: 58px 1fr;
+            gap: 3px 8px;
+            align-items: baseline;
+        }
+
+        .pi-contact-label {
+            color: #6b7280;
+            font-size: 0.82rem;
+        }
+
+        .pi-contact-value {
+            color: #111827;
+            font-size: 0.86rem;
+            word-break: break-word;
         }
 
         .pi-table {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 12px;
         }
 
         .pi-table th, .pi-table td {
-            border: 1px solid var(--gray-300);
-            padding: 10px 12px;
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 10px 10px;
             text-align: left;
         }
 
         .pi-table th {
-            background: var(--gray-100);
+            background: #f4f5f7;
+            color: #374151;
             font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            border-bottom-color: #d9dee8;
+        }
+
+        .pi-table td.amount-col {
+            font-weight: 700;
+            color: #0f172a;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .pi-totals-box {
+            margin-left: auto;
+            width: 290px;
+            border-top: 1px solid #d1d5db;
+            padding-top: 6px;
+            margin-bottom: 14px;
+        }
+
+        .pi-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.92rem;
+            color: #374151;
+            padding: 4px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .pi-total-row.grand {
+            margin-top: 6px;
+            padding-top: 7px;
+            border-top: 1px solid #cfd6e2;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .pi-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .pi-section {
+            border-top: 1px solid #e2e7ef;
+            padding-top: 10px;
+        }
+
+        .pi-section h3 {
+            font-size: 0.78rem;
+            margin-bottom: 8px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #6b7280;
+        }
+
+        .pi-section p {
+            font-size: 0.88rem;
+            color: #374151;
+            margin-bottom: 7px;
+            line-height: 1.5;
+        }
+
+        .pi-bank .bank-key {
+            color: #111827;
+            font-weight: 700;
+        }
+
+        .intermediary-box {
+            margin-top: 8px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 4px;
+            padding: 6px 8px;
+            background: transparent;
+        }
+
+        .intermediary-box p {
+            font-size: 0.74rem;
+            color: #4b5563;
+            margin-bottom: 4px;
+        }
+
+        .pi-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 14px;
+            gap: 20px;
+        }
+
+        .pi-disclaimer {
+            flex: 1;
+            border-top: 1px solid #e6e9f0;
+            padding-top: 8px;
+        }
+
+        .pi-disclaimer h3 {
+            font-size: 0.72rem;
+            margin-bottom: 5px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .pi-disclaimer p {
+            margin-bottom: 3px;
+            color: #4b5563;
+            font-size: 0.76rem;
+            line-height: 1.45;
+        }
+
+        .pi-signature-box {
+            width: 220px;
+            text-align: right;
+            margin-left: auto;
+        }
+
+        .pi-signature-space {
+            height: 58px;
+        }
+
+        .pi-signature-line {
+            border-top: 1px solid #111827;
+            padding-top: 6px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: #111827;
+            letter-spacing: 0.02em;
+        }
+
+        .pi-bottom-barcode {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid #e4e8ef;
+            padding-top: 10px;
+        }
+
+        .pi-barcode-label {
+            font-size: 0.72rem;
+            color: var(--gray-500);
+            margin-top: 4px;
+            width: 228px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        #createPiBarcode,
+        #piBarcode {
+            width: 228px;
+            height: 48px;
+            display: block;
         }
 
         .pi-table .text-right {
             text-align: right;
         }
 
-        .pi-terms {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--gray-200);
+        .preview-paper {
+            font-family: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
         }
 
-        .pi-terms h3 {
-            font-size: 1rem;
-            margin-bottom: 12px;
+        .preview-paper strong {
+            font-weight: 400;
         }
 
-        .pi-terms p {
+        .preview-paper .editor-doc-header {
+            border-bottom: 1px solid #d2d2d7;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+        }
+
+        .preview-paper .pi-brandmark {
+            font-size: 1.78rem;
+            letter-spacing: 0.12em;
+            font-weight: 400;
+            color: #1d1d1f;
+            text-transform: lowercase;
+        }
+
+        .preview-paper .pi-brandmark .brand-tail {
+            color: #ff0000;
+        }
+
+        .preview-paper .seller-mini {
+            margin-top: 8px;
+            max-width: 310px;
+        }
+
+        .preview-paper .seller-mini p {
+            font-size: 10pt;
+            color: #86868b;
+            line-height: 1.35;
+            margin: 0;
+        }
+
+        .preview-paper .editor-doc-title {
+            font-size: 2.02rem;
+            line-height: 1.02;
+            white-space: nowrap;
+            letter-spacing: -0.015em;
+            font-weight: 700;
+            color: #1d1d1f;
+        }
+
+        .preview-paper .editor-doc-meta-row {
+            grid-template-columns: minmax(0, 1fr) 212px;
+            align-items: start;
+            column-gap: 12px;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .preview-paper .editor-doc-meta-lines {
+            max-width: 100%;
+            min-width: 0;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .preview-paper .editor-doc-meta-lines .pi-no-line {
+            font-size: 0.98rem;
+            font-weight: 400;
+            color: #1d1d1f;
+            line-height: 1.3;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .preview-paper .editor-doc-meta-lines .date-line {
+            margin-top: 3px;
+            font-size: 0.94rem;
+            font-weight: 400;
+            line-height: 1.3;
+            color: #1d1d1f;
+        }
+
+        .preview-paper .editor-doc-barcode-wrap {
+            width: 212px;
+            min-width: 212px;
+            align-items: flex-end;
+            justify-self: end;
+            margin-top: 0;
+        }
+
+        .preview-paper #piBarcode {
+            width: 212px;
+            height: 42px;
+        }
+
+        .preview-paper .pi-barcode-label {
+            width: 212px;
+            text-align: center;
+            color: #86868b;
+        }
+
+        .preview-paper .card {
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            border-bottom: 1px solid #d2d2d7;
+            padding: 14px 0;
+            margin: 0;
+        }
+
+        .preview-paper .card:last-of-type {
+            border-bottom: none;
+        }
+
+        .preview-paper .card-title {
+            font-size: 0.88rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #1d1d1f;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .preview-paper .info-summary {
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            background: #ffffff;
+            padding: 10px 12px;
+        }
+
+        .preview-paper .info-summary h4 {
+            font-size: 0.84rem;
+            color: #1d1d1f;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+
+        .preview-paper .info-summary p {
+            font-size: 0.86rem;
+            color: #1d1d1f;
+            line-height: 1.42;
+            margin: 2px 0;
+        }
+
+        .preview-paper .product-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            border-spacing: 0;
+            margin-bottom: 10px;
+        }
+
+        .preview-paper .product-table thead {
+            display: table-header-group;
+        }
+
+        .preview-paper .product-table tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .preview-paper .product-table th,
+        .preview-paper .product-table td {
+            border-bottom: 1px solid #d2d2d7;
+            padding: 8px 6px;
+            font-size: 0.84rem;
+            color: #1d1d1f;
+            vertical-align: top;
+            font-weight: 400;
+        }
+
+        .preview-paper .product-table th {
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .preview-paper .product-table .col-no {
+            width: 8%;
+            text-align: center;
+        }
+
+        .preview-paper .product-table .col-desc {
+            width: 49%;
+        }
+
+        .preview-paper .product-table .col-qty {
+            width: 13%;
+            text-align: right;
+        }
+
+        .preview-paper .product-table .col-unit-price {
+            width: 15%;
+            text-align: right;
+        }
+
+        .preview-paper .product-table .col-amount {
+            width: 15%;
+            text-align: right;
+        }
+
+        .preview-paper .product-table .desc-sub {
+            color: #86868b;
+            font-size: 0.78rem;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        .preview-paper .totals {
+            background: transparent;
+            border-radius: 0;
+            border: none;
+            padding: 8px 0 0;
+            margin-top: 0;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .preview-paper .total-row {
+            padding: 4px 0;
             font-size: 0.9rem;
-            color: var(--gray-700);
-            margin-bottom: 8px;
+            color: #1d1d1f;
+            font-weight: 400;
         }
 
-        .pi-bank {
-            margin-top: 30px;
+        .preview-paper .total-row.grand {
+            margin-top: 6px;
+            border-top: 1px solid #d2d2d7;
+            padding-top: 10px;
+            font-size: 1.1rem;
+            color: #1d1d1f;
+            font-weight: 700;
+        }
+
+        .preview-paper .soft-card {
+            background: #f5f5f7;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-top: 14px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .preview-paper .soft-card .card-title {
+            margin-bottom: 10px;
+        }
+
+        .preview-paper .pi-section {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .preview-paper .pi-section p {
+            font-size: 0.84rem;
+            color: #1d1d1f;
+            margin-bottom: 5px;
+            line-height: 1.45;
+            font-weight: 400;
+        }
+
+        .preview-paper .pi-bank .bank-key {
+            color: #0066cc;
+            font-weight: 400;
+        }
+
+        .preview-paper .intermediary-box {
+            margin-top: 8px;
+            border: 1px dashed #d2d2d7;
+            border-radius: 10px;
+            padding: 8px 10px;
+            background: transparent;
+        }
+
+        .preview-paper .intermediary-box p {
+            font-size: 0.75rem;
+            color: #6e6e73;
+            margin-bottom: 3px;
+            line-height: 1.4;
+        }
+
+        .preview-paper.apple-rebuild {
+            font-family: "SF Pro Text", "SF Pro Display", Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            font-weight: 400;
+            background: #ffffff;
+        }
+
+        .preview-paper.apple-rebuild * {
+            font-weight: 400;
+        }
+
+        .preview-paper.apple-rebuild .section-block {
+            margin-top: 32px;
+        }
+
+        .preview-paper.apple-rebuild .pi-main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 28px;
+            border-bottom: 1px solid #d2d2d7;
+            padding-bottom: 16px;
+            margin-bottom: 0;
+        }
+
+        .preview-paper.apple-rebuild .brand-logo {
+            font-size: 24px;
+            color: #1d1d1f;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .preview-paper.apple-rebuild .brand-logo .brand-tail {
+            color: #ff0000;
+        }
+
+        .preview-paper.apple-rebuild .seller-inline {
+            margin-top: 8px;
+            font-size: 10px;
+            color: #86868b;
+            max-width: 430px;
+            line-height: 1.45;
+        }
+
+        .preview-paper.apple-rebuild .seller-inline .seller-line {
+            display: block;
+            margin: 0;
+            white-space: normal;
+        }
+
+        .preview-paper.apple-rebuild .seller-inline .seller-contacts {
+            display: block;
+            margin-top: 2px;
+        }
+
+        .preview-paper.apple-rebuild .nowrap {
+            white-space: nowrap;
+        }
+
+        .preview-paper.apple-rebuild .meta-block {
+            min-width: 300px;
+            text-align: right;
+        }
+
+        .preview-paper.apple-rebuild .meta-title {
+            font-size: 20px;
+            letter-spacing: 0.02em;
+            font-weight: 500;
+            color: #1d1d1f;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .preview-paper.apple-rebuild .meta-line {
+            margin-top: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+            color: #1d1d1f;
+        }
+
+        .preview-paper.apple-rebuild .buyer-block {
+            color: #333333;
+        }
+
+        .preview-paper.apple-rebuild .buyer-block p {
+            margin: 2px 0;
+            font-size: 14px;
+            color: #333333;
+            font-weight: 400;
+        }
+
+        .preview-paper.apple-rebuild .table-summary-wrap {
+            page-break-inside: auto;
+            break-inside: auto;
+        }
+
+        .preview-paper.apple-rebuild .product-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            border-spacing: 0;
+            margin: 0;
+        }
+
+        .preview-paper.apple-rebuild .product-table th,
+        .preview-paper.apple-rebuild .product-table td {
+            border: none;
+            padding: 8px 6px;
+            color: #1d1d1f;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        .preview-paper.apple-rebuild .product-table thead tr {
+            border-bottom: 1px solid #d2d2d7;
+        }
+
+        .preview-paper.apple-rebuild .product-table thead {
+            display: table-header-group;
+        }
+
+        .preview-paper.apple-rebuild .product-table tbody tr {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            -webkit-region-break-inside: avoid;
+        }
+
+        .preview-paper.apple-rebuild .product-table tbody tr.force-page-break-before {
+            break-before: page;
+            page-break-before: always;
+        }
+
+        .preview-paper.apple-rebuild .product-table tbody tr:last-child {
+            border-bottom: 1px solid #d2d2d7;
+        }
+
+        .preview-paper.apple-rebuild .product-table .col-no,
+        .preview-paper.apple-rebuild .product-table .col-desc {
+            text-align: left;
+        }
+
+        .preview-paper.apple-rebuild .product-table .col-qty,
+        .preview-paper.apple-rebuild .product-table .col-unit-price,
+        .preview-paper.apple-rebuild .product-table .col-amount {
+            text-align: right;
+        }
+
+        .preview-paper.apple-rebuild .product-table .col-no { width: 8%; }
+        .preview-paper.apple-rebuild .product-table .col-desc { width: 52%; }
+        .preview-paper.apple-rebuild .product-table .col-qty { width: 12%; }
+        .preview-paper.apple-rebuild .product-table .col-unit-price { width: 14%; }
+        .preview-paper.apple-rebuild .product-table .col-amount { width: 14%; }
+
+        .preview-paper.apple-rebuild .desc-sub {
+            display: inline-block;
+            margin-top: 2px;
+            font-size: 12px;
+            color: #86868b;
+            line-height: 1.35;
+        }
+
+        .preview-paper.apple-rebuild .totals {
+            margin-top: 12px;
+            margin-left: auto;
+            width: 45%;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .preview-paper.apple-rebuild .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+
+        .preview-paper.apple-rebuild .money-nowrap {
+            white-space: nowrap;
+        }
+
+        .preview-paper.apple-rebuild .total-row.grand {
+            margin-top: 6px;
+            border-top: 1px solid #d2d2d7;
+            padding-top: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1d1d1f;
+        }
+
+        .preview-paper.apple-rebuild .total-row.grand span {
+            font-weight: 700;
+        }
+
+        .preview-paper.apple-rebuild .terms-bank-table {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 16px;
+            width: 100%;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            -webkit-region-break-inside: avoid;
+        }
+
+        .preview-paper.apple-rebuild .terms-bank-row {
+            display: contents;
+        }
+
+        .preview-paper.apple-rebuild .terms-bank-cell {
+            min-width: 0;
+            width: auto;
+        }
+
+        .preview-paper.apple-rebuild .soft-card {
+            border-radius: 12px;
+            background: #f5f5f7;
             padding: 20px;
-            background: var(--gray-50);
-            border-radius: 8px;
+            border: none;
+            margin: 0;
+            margin-top: 16px;
+            break-inside: avoid;
+            page-break-inside: avoid;
         }
 
-        .pi-bank h3 {
-            margin-bottom: 12px;
+        .preview-paper.apple-rebuild .terms-container,
+        .preview-paper.apple-rebuild .bank-info-container {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            page-break-before: auto;
+        }
+
+        .preview-paper.apple-rebuild .soft-card .card-title {
+            margin: 0 0 10px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #1d1d1f;
+            font-weight: 500;
+        }
+
+        .preview-paper.apple-rebuild .soft-card p {
+            margin: 0 0 6px;
+            font-size: 13px;
+            color: #1d1d1f;
+            line-height: 1.5;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            -webkit-region-break-inside: avoid;
+        }
+
+        .preview-paper.apple-rebuild .soft-card .bank-line {
+            display: block;
+            margin: 0 0 6px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #1d1d1f;
+            white-space: normal;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            -webkit-region-break-inside: avoid;
+        }
+
+        .preview-paper.apple-rebuild .soft-card .bank-key {
+            color: #0066cc;
+            font-weight: 400;
+        }
+
+        .preview-paper.apple-rebuild .soft-card .intermediary-note {
+            font-size: 10px;
+            color: #86868b;
+            margin-top: 8px;
+        }
+
+        .preview-paper.apple-rebuild .footer-lite {
+            margin-top: 32px;
+            text-align: center;
+            color: #a1a1a6;
+            font-size: 9px;
+            border-top: 1px solid #d2d2d7;
+            padding-top: 12px;
+        }
+
+        .preview-paper.apple-rebuild .footer-lite .disclaimer-text {
+            display: block;
+            width: 100%;
+            white-space: normal;
+            word-break: normal;
+        }
+
+        .preview-paper.apple-rebuild #piFooterBarcode {
+            width: 200px;
+            height: 40px;
+            display: block;
+            margin: 0 auto;
         }
 
         /* 隐藏的页面 */
@@ -583,6 +1677,10 @@
             z-index: 1001;
         }
 
+        .hidden {
+            display: none;
+        }
+
         .toast.show {
             display: block;
             animation: slideIn 0.3s ease;
@@ -593,22 +1691,284 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
+        @page {
+            size: A4 portrait;
+            margin: 14mm;
+        }
+
         /* 打印样式 */
         @media print {
-            body * {
-                visibility: hidden;
+            html, body {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0;
+                background: #ffffff !important;
             }
-            .preview-container, .preview-container * {
-                visibility: visible;
+
+            .sidebar,
+            .page-header,
+            #page-create,
+            #page-customers,
+            #page-products,
+            #page-settings,
+            .editor-actions,
+            #page-preview > div[style*="margin-bottom:20px"] {
+                display: none !important;
             }
+
+            #page-preview {
+                display: block !important;
+            }
+
             .preview-container {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
+                position: static;
+                width: 186mm;
+                padding: 8mm 8mm 7mm;
+                margin: 0 auto;
                 border: none;
+                border-radius: 0;
                 box-shadow: none;
+                box-sizing: border-box;
             }
+
+            .preview-paper.apple-rebuild .product-table tbody tr {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                -webkit-region-break-inside: avoid;
+            }
+
+            .preview-paper.apple-rebuild .product-table tbody tr.force-page-break-before {
+                break-before: page !important;
+                page-break-before: always !important;
+            }
+
+            .preview-paper.apple-rebuild .soft-card,
+            .preview-paper.apple-rebuild .totals,
+            .preview-paper.apple-rebuild .footer-lite {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                -webkit-region-break-inside: avoid;
+            }
+
+            .preview-paper.apple-rebuild .product-table td,
+            .preview-paper.apple-rebuild .product-table td > div,
+            .preview-paper.apple-rebuild .desc-sub,
+            .preview-paper.apple-rebuild .soft-card .bank-line,
+            .preview-paper.apple-rebuild .soft-card p {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                -webkit-region-break-inside: avoid;
+            }
+
+            .preview-paper.apple-rebuild .terms-bank-table {
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+                gap: 16px !important;
+                width: 100% !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+
+            .preview-paper.apple-rebuild .terms-bank-row {
+                display: contents !important;
+            }
+        }
+
+        body.pdf-export-mode .sidebar,
+        body.pdf-export-mode .page-header,
+        body.pdf-export-mode #page-create,
+        body.pdf-export-mode #page-customers,
+        body.pdf-export-mode #page-products,
+        body.pdf-export-mode #page-settings,
+        body.pdf-export-mode .editor-actions,
+        body.pdf-export-mode #page-preview > div[style*="margin-bottom:20px"] {
+            display: none !important;
+        }
+
+        body.pdf-export-mode .app-container {
+            display: block !important;
+            width: auto !important;
+            min-height: auto !important;
+            background: #ffffff !important;
+        }
+
+        body.pdf-export-mode .main-content {
+            padding: 0 !important;
+            max-width: none !important;
+            background: #ffffff !important;
+        }
+
+        body.pdf-export-mode #page-preview {
+            display: block !important;
+        }
+
+        body.pdf-export-mode .preview-container {
+            width: 186mm !important;
+            min-height: auto !important;
+            max-width: 186mm !important;
+            margin: 0 auto !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 8mm 8mm 7mm !important;
+            box-sizing: border-box !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .product-table tbody tr,
+        body.pdf-export-mode .preview-paper.apple-rebuild .product-table td,
+        body.pdf-export-mode .preview-paper.apple-rebuild .product-table td > div,
+        body.pdf-export-mode .preview-paper.apple-rebuild .desc-sub {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            -webkit-region-break-inside: avoid;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .product-table tbody tr.force-page-break-before {
+            break-before: page !important;
+            page-break-before: always !important;
+        }
+
+
+        body.pdf-export-mode .preview-paper {
+            max-width: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+
+        body.pdf-export-mode .preview-paper .editor-doc-header {
+            margin-bottom: 14px !important;
+            padding-bottom: 10px !important;
+        }
+
+        body.pdf-export-mode .preview-paper .editor-doc-title {
+            font-size: 1.58rem !important;
+            line-height: 1.05 !important;
+        }
+
+        body.pdf-export-mode .preview-paper .pi-brandmark {
+            font-size: 1.58rem !important;
+        }
+
+        body.pdf-export-mode .preview-paper .pi-brand-site {
+            margin-top: 5px !important;
+            font-size: 0.74rem !important;
+        }
+
+        body.pdf-export-mode .preview-paper .card {
+            padding: 14px 0 !important;
+        }
+
+        body.pdf-export-mode .preview-paper .card-title {
+            margin-bottom: 10px !important;
+            font-size: 0.9rem !important;
+        }
+
+        body.pdf-export-mode .preview-paper .info-summary {
+            padding: 10px 12px !important;
+            border-radius: 8px !important;
+        }
+
+        body.pdf-export-mode .preview-paper .info-summary p {
+            font-size: 0.83rem !important;
+            line-height: 1.46 !important;
+        }
+
+        body.pdf-export-mode .preview-paper .product-table th {
+            padding: 6px 8px 7px !important;
+            font-size: 0.74rem !important;
+        }
+
+        body.pdf-export-mode .preview-paper .product-table td {
+            padding: 7px 8px !important;
+            font-size: 0.8rem !important;
+        }
+
+        body.pdf-export-mode .preview-paper .totals {
+            margin-top: 10px !important;
+            padding: 10px 12px !important;
+            border-radius: 6px !important;
+        }
+
+        body.pdf-export-mode .preview-paper .total-row {
+            padding: 5px 0 !important;
+            font-size: 0.85rem !important;
+        }
+
+        body.pdf-export-mode .preview-paper .total-row.grand {
+            font-size: 1rem !important;
+            padding-top: 10px !important;
+            margin-top: 6px !important;
+        }
+
+        body.pdf-export-mode .preview-paper .pi-section p {
+            font-size: 0.82rem !important;
+            margin-bottom: 4px !important;
+            line-height: 1.5 !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild {
+            line-height: 1.5 !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .section-block {
+            margin-top: 32px !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .meta-title {
+            font-size: 20px !important;
+            font-weight: 500 !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .meta-line {
+            font-size: 14px !important;
+            white-space: nowrap !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .product-table th,
+        body.pdf-export-mode .preview-paper.apple-rebuild .product-table td {
+            font-size: 14px !important;
+            padding: 8px 6px !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .desc-sub {
+            font-size: 12px !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .soft-card {
+            padding: 20px !important;
+            border-radius: 12px !important;
+            background: #f5f5f7 !important;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            -webkit-region-break-inside: avoid !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .soft-card p,
+        body.pdf-export-mode .preview-paper.apple-rebuild .soft-card .bank-line {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            -webkit-region-break-inside: avoid !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .terms-bank-table {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+            gap: 16px !important;
+            width: 100% !important;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            -webkit-region-break-inside: avoid !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .terms-bank-row {
+            display: contents !important;
+        }
+
+        body.pdf-export-mode .preview-paper.apple-rebuild .footer-lite {
+            font-size: 9px !important;
+            color: #a1a1a6 !important;
         }
 
         /* 响应式 */
@@ -627,6 +1987,34 @@
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
+            .pi-sections {
+                grid-template-columns: 1fr;
+            }
+            .pi-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .pi-header-main {
+                text-align: left;
+            }
+            .pi-meta-line {
+                white-space: normal;
+            }
+            .pi-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .pi-signature-box {
+                width: 100%;
+                text-align: left;
+            }
+            .bulk-toolbar {
+                grid-template-columns: 1fr;
+            }
+            .bulk-actions {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -634,6 +2022,10 @@
     <div class="app-container">
         <!-- 侧边栏 -->
         <div class="sidebar">
+            <div class="brand-logo-wrap">
+                <div class="brand-wordmark">TERPLA<span class="brand-tail">X</span></div>
+                <div class="brand-site">http://www.terplax.com</div>
+            </div>
             <h1>PI Generator</h1>
             <p class="subtitle">形式发票生成器</p>
 
@@ -670,90 +2062,173 @@
         <div class="main-content">
             <!-- 创建PI页面 -->
             <div id="page-create" class="page active">
-                <div class="page-header">
-                    <h2 class="page-title">新建形式发票</h2>
-                    <p class="page-desc">填写中文信息，自动生成英文PI</p>
-                </div>
+                <div class="editor-paper">
+                    <div class="editor-doc-header">
+                        <div>
+                            <div class="pi-brandmark">TERPLA<span class="brand-tail">X</span></div>
+                            <div class="pi-brand-site">http://www.terplax.com</div>
+                        </div>
+                        <div class="editor-doc-meta">
+                            <div class="editor-doc-title">PROFORMA INVOICE</div>
+                            <div class="editor-doc-sub">Draft Editing View / 所见即所得编辑界面</div>
+                            <div class="editor-doc-meta-row">
+                                <div class="editor-doc-meta-lines">
+                                    <div class="pi-no-line" id="createPiNoLine">PI No: -</div>
+                                    <div class="date-line" id="createDateLine">Date: - | Valid Until: -</div>
+                                </div>
+                                <div class="editor-doc-barcode-wrap">
+                                    <svg id="createPiBarcode"></svg>
+                                    <div class="pi-barcode-label" id="createBarcodeLabel">Barcode: -</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                <!-- PI基本信息 -->
-                <div class="card">
-                    <div class="card-title">发票信息 <span class="badge">Invoice Info</span></div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>PI编号 <span class="en">PI No.</span></label>
-                            <input type="text" id="piNo" placeholder="例如: PI-2024-001">
-                        </div>
-                        <div class="form-group">
-                            <label>日期 <span class="en">Date</span></label>
-                            <input type="date" id="piDate">
-                        </div>
-                        <div class="form-group">
-                            <label>有效期 <span class="en">Valid Until</span></label>
-                            <input type="date" id="piValidDate">
+                    <!-- PI基本信息 -->
+                    <div class="card">
+                        <div class="card-title">发票信息 <span class="badge">Invoice Info</span></div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>PI编号 <span class="en">PI No.</span></label>
+                                <input type="text" id="piNo" placeholder="例如: PI-2024-001">
+                            </div>
+                            <div class="form-group">
+                                <label>日期 <span class="en">Date</span></label>
+                                <input type="date" id="piDate">
+                            </div>
+                            <div class="form-group">
+                                <label>有效期 <span class="en">Valid Until</span></label>
+                                <input type="date" id="piValidDate">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 买方信息 -->
-                <div class="card">
-                    <div class="card-title">
-                        买方信息 <span class="badge">Buyer Info</span>
-                        <button class="btn btn-sm btn-secondary" onclick="showCustomerModal()">选择已保存客户</button>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>公司名称 <span class="en">Company</span></label>
-                            <input type="text" id="buyerCompany" placeholder="客户公司名称">
+                    <!-- 买方信息 -->
+                    <div class="card">
+                        <div class="card-title">
+                            买方信息 <span class="badge">Buyer Info</span>
+                            <button class="btn btn-sm btn-secondary" onclick="showCustomerModal()">选择已保存客户</button>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>公司名称 <span class="en">Company</span></label>
+                                <input type="text" id="buyerCompany" placeholder="客户公司名称">
+                            </div>
+                            <div class="form-group">
+                                <label>联系人 <span class="en">Contact</span></label>
+                                <input type="text" id="buyerContact" placeholder="联系人姓名">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>联系人 <span class="en">Contact</span></label>
-                            <input type="text" id="buyerContact" placeholder="联系人姓名">
+                            <label>地址 <span class="en">Address</span></label>
+                            <textarea id="buyerAddress" rows="2" placeholder="详细地址"></textarea>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label>地址 <span class="en">Address</span></label>
-                        <textarea id="buyerAddress" rows="2" placeholder="详细地址"></textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>电话 <span class="en">Tel</span></label>
-                            <input type="text" id="buyerTel" placeholder="电话号码">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>电话 <span class="en">Tel</span></label>
+                                <input type="text" id="buyerTel" placeholder="电话号码">
+                            </div>
+                            <div class="form-group">
+                                <label>邮箱 <span class="en">Email</span></label>
+                                <input type="email" id="buyerEmail" placeholder="邮箱地址">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>邮箱 <span class="en">Email</span></label>
-                            <input type="email" id="buyerEmail" placeholder="邮箱地址">
-                        </div>
+                        <button class="btn btn-sm btn-outline" onclick="saveCurrentCustomer()">保存此客户到常用列表</button>
                     </div>
-                    <button class="btn btn-sm btn-outline" onclick="saveCurrentCustomer()">保存此客户到常用列表</button>
-                </div>
 
-                <!-- 产品明细 -->
-                <div class="card">
-                    <div class="card-title">
-                        产品明细 <span class="badge">Product Details</span>
-                        <button class="btn btn-sm btn-secondary" onclick="showProductModal()">从产品库添加</button>
+                    <div class="card">
+                        <div class="card-title">
+                            卖方与收款信息 <span class="badge">Seller & Receiving</span>
+                            <button class="btn btn-sm btn-secondary" onclick="switchPage('settings')">去卖方设置修改</button>
+                        </div>
+                        <div class="info-summary-grid">
+                            <div class="info-summary">
+                                <h4>Seller Info</h4>
+                                <p id="sellerSummaryCompany">Company: N/A</p>
+                                <p id="sellerSummaryAddress">Address: N/A</p>
+                                <p id="sellerSummaryContact">Contact: N/A</p>
+                                <p id="sellerSummaryTel">Tel: N/A</p>
+                                <p id="sellerSummaryEmail">Email: N/A</p>
+                            </div>
+                            <div class="info-summary">
+                                <h4>Receiving Info</h4>
+                                <div class="receive-mode-switch">
+                                    <button type="button" id="receiveModeBankBtn" class="receive-mode-btn" onclick="setReceiveType('bank')">银行账户</button>
+                                    <button type="button" id="receiveModeCryptoBtn" class="receive-mode-btn" onclick="setReceiveType('crypto')">数字货币</button>
+                                </div>
+                                <div id="receiveSummaryBlock">
+                                    <p id="receiveSummaryType">Type: N/A</p>
+                                    <p id="receiveSummaryLine1">N/A</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <table class="product-table" id="productTable">
+
+                    <!-- 产品明细 -->
+                    <div class="card">
+                        <div class="card-title">
+                            产品明细 <span class="badge">Product Details</span>
+                            <button class="btn btn-sm btn-secondary" onclick="showProductModal()">从产品库添加</button>
+                        </div>
+
+                        <div class="bulk-toolbar">
+                        <div>
+                            <div class="bulk-title">批量修改（Spec / Qty / Price）</div>
+                            <div class="bulk-fields">
+                                <input type="text" id="bulkSpec" class="bulk-input" placeholder="批量规格">
+                                <input type="number" id="bulkQty" class="bulk-input" placeholder="批量数量" min="0" step="1">
+                                <input type="number" id="bulkPrice" class="bulk-input" placeholder="批量单价" min="0" step="0.01">
+                                <select id="bulkScope" class="bulk-scope">
+                                    <option value="all">应用范围：全部行</option>
+                                    <option value="selected">应用范围：选中行</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="bulk-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllRows(true)">全选</button>
+                            <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllRows(false)">取消全选</button>
+                            <button class="btn btn-primary btn-sm" onclick="applyBulkEdit()">应用批量修改</button>
+                        </div>
+                    </div>
+
+                        <table class="product-table" id="productTable">
                         <thead>
                             <tr>
-                                <th style="width:30%">产品名称 / Description</th>
+                                <th style="width:5%;text-align:center">
+                                    <input type="checkbox" id="selectAllRows" class="row-picker" onchange="toggleSelectAllRows(this.checked)">
+                                </th>
+                                <th style="width:25%">产品名称 / Description</th>
                                 <th style="width:15%">规格 / Spec</th>
                                 <th style="width:12%">数量 / Qty</th>
                                 <th style="width:10%">单位 / Unit</th>
-                                <th style="width:13%">单价 / Price</th>
-                                <th style="width:13%">金额 / Amount</th>
+                                <th style="width:12%">单价 / Price</th>
+                                <th style="width:14%">金额 / Amount</th>
                                 <th style="width:7%"></th>
                             </tr>
                         </thead>
                         <tbody id="productRows">
                             <!-- 动态添加 -->
                         </tbody>
-                    </table>
-                    
-                    <button class="btn btn-outline" onclick="addProductRow()" style="width:100%">+ 添加产品行</button>
+                        </table>
+                        
+                        <div class="row-add-controls">
+                            <button class="btn btn-outline" onclick="addProductRow()" style="flex:1">+ 添加产品行</button>
+                            <input type="number" id="addRowsCount" min="1" max="200" step="1" value="1" placeholder="行数">
+                            <button class="btn btn-secondary" onclick="addMultipleProductRows()">按数量添加</button>
+                            <button class="btn btn-secondary" onclick="addRandomFlavorRows()">随机口味</button>
+                        </div>
 
-                    <div class="totals">
+                        <div class="quick-flavor-import">
+                            <div class="title">快捷导入口味（支持剪切板）</div>
+                            <textarea id="quickFlavorInput" rows="3" placeholder="每行一个口味，或用逗号分隔，例如: Blue Dream, OG Kush"></textarea>
+                            <div class="quick-flavor-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="importFromClipboard()">从剪切板导入</button>
+                                <button class="btn btn-secondary btn-sm" onclick="clearQuickFlavorInput()">清空</button>
+                                <button class="btn btn-primary btn-sm" onclick="importQuickFlavors()">添加到产品行</button>
+                            </div>
+                        </div>
+
+                        <div class="totals">
                         <div class="total-row">
                             <span>小计 Subtotal</span>
                             <span id="subtotal">USD 0.00</span>
@@ -774,13 +2249,13 @@
                             <span>总计 TOTAL</span>
                             <span id="grandTotal">USD 0.00</span>
                         </div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- 贸易条款 -->
-                <div class="card">
-                    <div class="card-title">贸易条款 <span class="badge">Trade Terms</span></div>
-                    <div class="form-row">
+                    <!-- 贸易条款 -->
+                    <div class="card">
+                        <div class="card-title">贸易条款 <span class="badge">Trade Terms</span></div>
+                        <div class="form-row">
                         <div class="form-group">
                             <label>贸易方式 <span class="en">Trade Term</span></label>
                             <select id="tradeTerm">
@@ -799,8 +2274,8 @@
                             <label>目的港 <span class="en">Port of Destination</span></label>
                             <input type="text" id="portOfDest" placeholder="例如: Los Angeles, USA">
                         </div>
-                    </div>
-                    <div class="form-row">
+                        </div>
+                        <div class="form-row">
                         <div class="form-group">
                             <label>付款方式 <span class="en">Payment Term</span></label>
                             <select id="paymentTerm">
@@ -815,17 +2290,18 @@
                             <label>交货期 <span class="en">Delivery Time</span></label>
                             <input type="text" id="deliveryTime" placeholder="例如: 30 days after deposit">
                         </div>
+                        </div>
+                        <div class="form-group">
+                            <label>备注 <span class="en">Remarks</span></label>
+                            <textarea id="remarks" rows="3" placeholder="其他需要说明的事项"></textarea>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>备注 <span class="en">Remarks</span></label>
-                        <textarea id="remarks" rows="3" placeholder="其他需要说明的事项"></textarea>
-                    </div>
-                </div>
 
-                <!-- 操作按钮 -->
-                <div style="display:flex;gap:12px;justify-content:flex-end">
-                    <button class="btn btn-secondary" onclick="clearForm()">清空表单</button>
-                    <button class="btn btn-primary" onclick="generatePreview()">生成预览</button>
+                    <div class="editor-actions">
+                        <button class="btn btn-secondary" onclick="fillJalenOrder()">填入Jalen订单</button>
+                        <button class="btn btn-secondary" onclick="clearForm()">清空表单</button>
+                        <button class="btn btn-primary" onclick="generatePreview()">生成预览</button>
+                    </div>
                 </div>
             </div>
 
@@ -833,11 +2309,12 @@
             <div id="page-preview" class="page">
                 <div class="page-header">
                     <h2 class="page-title">预览 & 打印</h2>
-                    <p class="page-desc">检查PI内容，确认无误后打印或导出</p>
+                    <p class="page-desc">检查PI内容，确认无误后打印或通过浏览器另存PDF</p>
                 </div>
 
                 <div style="margin-bottom:20px;display:flex;gap:12px">
-                    <button class="btn btn-primary" onclick="window.print()">打印 / 导出PDF</button>
+                    <button class="btn btn-primary" onclick="printCurrentPI()">打印</button>
+                    <button class="btn btn-secondary" onclick="exportCurrentPDF()">导出 PDF</button>
                     <button class="btn btn-secondary" onclick="switchPage('create')">返回编辑</button>
                 </div>
 
@@ -866,6 +2343,9 @@
                 <div class="page-header">
                     <h2 class="page-title">产品库</h2>
                     <p class="page-desc">管理常用产品，快速添加到PI</p>
+                    <div style="margin-top:12px">
+                        <button class="btn btn-secondary btn-sm" onclick="importFlavorCatalog()">导入口味清单预置</button>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -883,6 +2363,15 @@
                         </div>
                     </div>
                     <div class="form-row">
+                        <div class="form-group">
+                            <label>产品系列</label>
+                            <select id="newProductSeries">
+                                <option value="botanical">Botanical Terpene</option>
+                                <option value="fusion">Fusion CDTs</option>
+                                <option value="flavor">Flavor Infused</option>
+                                <option value="natural">All Natural Infused</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label>规格</label>
                             <input type="text" id="newProductSpec" placeholder="规格型号">
@@ -947,30 +2436,115 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title">银行账户信息 <span class="badge">Bank Details</span></div>
+                    <div class="card-title">收款信息 <span class="badge">Payment Receiving</span></div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>收款人名称 <span class="en">Beneficiary Name</span></label>
-                            <input type="text" id="bankBeneficiary" placeholder="与银行账户一致的英文名">
-                        </div>
-                        <div class="form-group">
-                            <label>银行名称 <span class="en">Bank Name</span></label>
-                            <input type="text" id="bankName" placeholder="Bank of China">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>银行账号 <span class="en">Account No.</span></label>
-                            <input type="text" id="bankAccount" placeholder="银行账号">
-                        </div>
-                        <div class="form-group">
-                            <label>SWIFT代码 <span class="en">SWIFT Code</span></label>
-                            <input type="text" id="bankSwift" placeholder="BKCHCNBJ">
+                            <label>收款方式</label>
+                            <select id="paymentReceiveType" onchange="toggleReceiveType()">
+                                <option value="bank">银行账户</option>
+                                <option value="crypto">收币地址</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>银行地址 <span class="en">Bank Address</span></label>
-                        <textarea id="bankAddress" rows="2" placeholder="银行地址（英文）"></textarea>
+
+                    <div id="receiveBankFields">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>收款人名称 <span class="en">Beneficiary Name</span></label>
+                                <input type="text" id="bankBeneficiary" placeholder="与银行账户一致的英文名">
+                            </div>
+                            <div class="form-group">
+                                <label>收款人地址 <span class="en">Beneficiary Address</span></label>
+                                <input type="text" id="bankBeneficiaryAddress" placeholder="Beneficiary full address (English)">
+                            </div>
+                            <div class="form-group">
+                                <label>收款人国家/地区 <span class="en">Beneficiary Country/Region</span></label>
+                                <input type="text" id="bankBeneficiaryCountry" placeholder="Hong Kong SAR">
+                            </div>
+                            <div class="form-group">
+                                <label>银行名称 <span class="en">Bank Name</span></label>
+                                <input type="text" id="bankName" placeholder="Bank of China">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>银行账号 <span class="en">Account No.</span></label>
+                                <input type="text" id="bankAccount" placeholder="银行账号">
+                            </div>
+                            <div class="form-group">
+                                <label>SWIFT代码 <span class="en">SWIFT Code</span></label>
+                                <input type="text" id="bankSwift" placeholder="BKCHCNBJ">
+                            </div>
+                            <div class="form-group">
+                                <label>银行编号 <span class="en">Bank Code</span></label>
+                                <input type="text" id="bankCode" placeholder="387">
+                            </div>
+                            <div class="form-group">
+                                <label>账户币种 <span class="en">Account Currency</span></label>
+                                <input type="text" id="bankCurrency" placeholder="USD / HKD / CNY">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>汇款附言要求 <span class="en">Payment Reference Requirement</span></label>
+                            <input type="text" id="bankReferenceRule" placeholder="Must include PI No in payment reference">
+                        </div>
+                        <div class="form-group">
+                            <label>银行地址 <span class="en">Bank Address</span></label>
+                            <textarea id="bankAddress" rows="2" placeholder="银行地址（英文）"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>跨境汇款代理银行说明 <span class="en">Intermediary Bank Notice</span></label>
+                            <textarea id="intermediaryNotice" rows="3" placeholder="跨境汇款代理银行（中转行）说明"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>代理银行名称 <span class="en">Intermediary Bank Name</span></label>
+                                <input type="text" id="intermediaryBankName" placeholder="Citibank N.A. Hong Kong">
+                            </div>
+                            <div class="form-group">
+                                <label>代理银行 SWIFT <span class="en">Intermediary SWIFT</span></label>
+                                <input type="text" id="intermediarySwift" placeholder="CITIHKHXXXX">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>代理银行编号 <span class="en">Intermediary Bank Code</span></label>
+                                <input type="text" id="intermediaryBankCode" placeholder="006">
+                            </div>
+                            <div class="form-group">
+                                <label>分行名称 <span class="en">Branch Name</span></label>
+                                <input type="text" id="intermediaryBranchName" placeholder="Hong Kong Branch">
+                            </div>
+                            <div class="form-group">
+                                <label>分行编号 <span class="en">Branch Code</span></label>
+                                <input type="text" id="intermediaryBranchCode" placeholder="391">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>代理银行地址 <span class="en">Intermediary Bank Address</span></label>
+                            <textarea id="intermediaryBankAddress" rows="2" placeholder="Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="receiveCryptoFields" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>币种</label>
+                                <input type="text" id="cryptoCurrency" placeholder="USDT / USDC / BTC / ETH">
+                            </div>
+                            <div class="form-group">
+                                <label>链类型</label>
+                                <input type="text" id="cryptoNetwork" placeholder="TRC20 / ERC20 / BEP20">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>收币地址</label>
+                            <textarea id="cryptoAddress" rows="2" placeholder="收币地址"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>收款人备注（可选）</label>
+                            <input type="text" id="cryptoBeneficiary" placeholder="收款人或账户备注">
+                        </div>
                     </div>
                 </div>
 
@@ -1010,9 +2584,127 @@
         let products = JSON.parse(localStorage.getItem('pi_products') || '[]');
         let settings = JSON.parse(localStorage.getItem('pi_settings') || '{}');
         let productRowId = 0;
+        let lockedPiNo = null;
+
+        const USED_PI_KEY = 'pi_used_numbers';
+        const DEVICE_ID_KEY = 'pi_device_id_v1';
+        const PI_COUNTER_PREFIX = 'pi_daily_counter_';
+        const DEMO_ORDER_SEEDED_KEY = 'pi_demo_order_seeded_v1';
+        const JALEN_ORDER_FLAVORS = [
+            'Fruit Punch',
+            'Guava Gelato',
+            'Blue Raspberry Rush',
+            'Tangie',
+            'Watermelon',
+            'Thai Mango Ice',
+            'Kiwi Berry',
+            'Girl Scout Cookies',
+            'Zkittles',
+            'Frosted Sugar Plum',
+            'Marshmallow Puff',
+            'Peaches And Creme',
+            'Wedding Cake',
+            'Blue Dream',
+            'GG4',
+            'Sour Diesel',
+            'Do si Dos',
+            'Mimosa',
+            'King Lious XXI',
+            'OG Kush'
+        ];
+        const CODE39_MAP = {
+            '0': 'nnnwwnwnn', '1': 'wnnwnnnnw', '2': 'nnwwnnnnw', '3': 'wnwwnnnnn', '4': 'nnnwwnnnw',
+            '5': 'wnnwwnnnn', '6': 'nnwwwnnnn', '7': 'nnnwnnwnw', '8': 'wnnwnnwnn', '9': 'nnwwnnwnn',
+            A: 'wnnnnwnnw', B: 'nnwnnwnnw', C: 'wnwnnwnnn', D: 'nnnnwwnnw', E: 'wnnnwwnnn',
+            F: 'nnwnwwnnn', G: 'nnnnnwwnw', H: 'wnnnnwwnn', I: 'nnwnnwwnn', J: 'nnnnwwwnn',
+            K: 'wnnnnnnww', L: 'nnwnnnnww', M: 'wnwnnnnwn', N: 'nnnnwnnww', O: 'wnnnwnnwn',
+            P: 'nnwnwnnwn', Q: 'nnnnnnwww', R: 'wnnnnnwwn', S: 'nnwnnnwwn', T: 'nnnnwnwwn',
+            U: 'wwnnnnnnw', V: 'nwwnnnnnw', W: 'wwwnnnnnn', X: 'nwnnwnnnw', Y: 'wwnnwnnnn',
+            Z: 'nwwnwnnnn', '-': 'nwnnnnwnw', '.': 'wwnnnnwnn', ' ': 'nwwnnnwnn', '$': 'nwnwnwnnn',
+            '/': 'nwnwnnnwn', '+': 'nwnnnwnwn', '%': 'nnnwnwnwn', '*': 'nwnnwnwnn'
+        };
+        const DEFAULT_SETTINGS = {
+            sellerCompanyEn: 'Guangzhou Terplax Biotechnology Co., Ltd.',
+            sellerAddress: 'Huanan City, Pinghu, Longgang District, Shenzhen, China',
+            sellerContact: 'Zane Yan',
+            sellerTel: '+1 912-217-8368',
+            sellerEmail: 'zaneyan@terplax.com',
+            paymentReceiveType: 'bank',
+            bankBeneficiary: 'ZHANG YAN',
+            bankBeneficiaryAddress: 'Huanan City, Pinghu, Longgang District, Shenzhen, China',
+            bankBeneficiaryCountry: 'Hong Kong SAR',
+            bankName: 'ZA Bank Limited',
+            bankAccount: '880013518561',
+            bankSwift: 'AABLHKHH',
+            bankAddress: 'Core F, Cyberport 3, 100 Cyberport Road, Hong Kong',
+            bankCode: '387',
+            bankCurrency: 'USD',
+            bankReferenceRule: 'Please include PI No as payment reference.',
+            intermediaryNotice: 'Please note: This is intermediary bank information for cross-border remittance, not beneficiary bank information. Please check with your remitting bank whether intermediary bank details are required.',
+            intermediaryBankName: 'Citibank N.A. Hong Kong',
+            intermediarySwift: 'CITIHKHXXXX',
+            intermediaryBankCode: '006',
+            intermediaryBranchName: 'Hong Kong Branch',
+            intermediaryBranchCode: '391',
+            intermediaryBankAddress: 'Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong',
+            cryptoCurrency: 'USDT',
+            cryptoNetwork: 'TRC-20',
+            cryptoAddress: 'TVAE9zKW9WDHFZTK6GcSSbLppLyavjGPiL',
+            cryptoBeneficiary: 'ZHANG YAN'
+        };
 
         // 常用单位
-        const UNITS = ['PCS', 'SET', 'KG', 'G', 'L', 'ML', 'M', 'BOX', 'CTN', 'PAIR'];
+        const UNITS = ['PCS', 'SET', 'KG', 'G', 'L', 'ML', 'M', 'BOX', 'CTN', 'PAIR', 'BTL', 'DRUM'];
+
+        // 报价单默认价格映射（按系列对齐）
+        const PRICE_BOOK = {
+            botanical: { spec: '120mL Bottle', unit: 'BTL', price: 120 },
+            fusion: { spec: '120mL Bottle', unit: 'BTL', price: 300 },
+            flavor: { spec: '120mL Bottle', unit: 'BTL', price: 120 },
+            natural: { spec: '120mL Bottle', unit: 'BTL', price: 120 }
+        };
+
+        // 口味清单预置（第一版）
+        const FLAVOR_CATALOG = {
+            botanical: [
+                'ACDC', 'Agent Orange', 'Blue Dream', 'Cherry Pie', 'Do-Si-Dos', 'Gelato', 'GSC',
+                'Granddaddy Purple', 'Green Crack', 'Jack', 'King Louis XIII', 'Mimosa',
+                'Northern Lights', 'OG Kush', 'Pineapple Express', 'Runtz', 'Skywalker OG',
+                'Super Lemon Haze', 'Super Sour Diesel', 'WI FI OG', 'Zkittles',
+                'Acapulco Gold', 'ATF', 'Bubba Kush', 'Clementine', 'Durban Poison',
+                'Fire OG', 'GG#4', 'God\'s Gift', 'Goji OG', 'Headband', 'Mendo Breath',
+                'Orange Cookies', 'SFV OG', 'Sundae Driver', 'Sunset Sherbet', 'Super Silver Haze',
+                'Superglue', 'XJ-13', 'Tahoe OG', 'Tangie', 'Trainwreck', 'Watermelon', 'White Widow'
+            ],
+            fusion: [
+                'Blue Dream', 'Cookies', 'Fruity Cereal OG', 'Gelato', 'GG4', 'Granddaddy Purple',
+                'OG Kush', 'Sour Diesel', 'Strawberry Cough', 'Super Lemon Haze', 'Watermelon OG', 'Wedding Cake'
+            ],
+            flavor: [
+                'Aloe Green Grape', 'Apple Rings', 'Atomic Pop', 'Banana Candy', 'Blue Milk',
+                'Bubble Gum Burst', 'Cactus Quencher', 'Candy Cane', 'Caramel Apple', 'Caramel Almond Milk',
+                'Cereal Milk', 'Cherry Pie', 'Electric Green Apple', 'Frosted Sugar Plum', 'Fruit Punch',
+                'Glacial Guava', 'Hawaiian Haze', 'Killer Kiwi', 'Kiwi Berry', 'Kiwi Guava', 'Lemon Cheesecake',
+                'Lime Lightning', 'Lychee Jelly', 'Mango Sunrise', 'Marshmallow Puff', 'Melon Milkshake',
+                'Mojito', 'Thai Mango Ice', 'Passionfruit Pleaser', 'Peach Rings', 'Peaches and Creme',
+                'Pineapple Orange Creme', 'Pineapple Pop', 'Pink Guava', 'Pink Lemonade',
+                'Strawberry Banana', 'Strawberry Jelly', 'Strawberry Milkshake', 'Swirly Pineapple',
+                'Summer Lemon', 'Watermelon Splash', 'Wedding Cake', 'White Gummie Beer', 'Wild Cherry',
+                'Apples & Bananas', 'Blue Raspberry Rush', 'Blueberry Cookies', 'Blueberry Muffin',
+                'Boysenberry Boogie', 'Cantaloupe Crush', 'Classic Glazed Donut', 'Coconut Cream',
+                'Cranberry Cheer', 'Lavender Vanilla', 'Lunar Lychee Ice', 'Orange Tsunami',
+                'Peanut Butter & Jelly', 'Peppermint Mocha', 'Permafrost Peach', 'Pina Colada',
+                'Plum Cider Sangria', 'Root Beer Float'
+            ],
+            natural: [
+                '24k Gold Punch', 'Apple Fritter', 'Banana Runtz', 'Berry Gelato', 'Biscotti',
+                'Blackberry Kush', 'Blue Dream', 'Blue Widow', 'Blue Zkittles', 'Blueberry Haze',
+                'Forbidden Guava', 'Gelato #33', 'Grape Ape', 'Grape Goji OG', 'Gruntz', 'Guava Gelato',
+                'Hawaiian Haze', 'King Louis XIII', 'Lemon Runtz', 'Lemonade Kush', 'Mango Kush',
+                'Maui Wowie', 'Orange Creamsicle', 'Guava Pineapple', 'Purple Punch',
+                'Rainbow Belts', 'Raspberry Kush', 'Strawnana', 'Tropical Zkittles', 'Watermelon Zkittles'
+            ]
+        };
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -1033,18 +2725,333 @@
             document.getElementById('piValidDate').value = validDate.toISOString().split('T')[0];
 
             // 生成默认PI编号
-            document.getElementById('piNo').value = `PI-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`;
+            document.getElementById('piNo').value = generateUniquePiNo();
 
             // 添加初始产品行
             addProductRow();
 
+            // 默认贸易条件
+            document.getElementById('tradeTerm').value = 'DDP';
+            document.getElementById('portOfLoading').value = 'Guangdong, Shenzhen';
+
             // 加载设置
             loadSettings();
+
+            // 首次启动自动加载口味清单产品库
+            seedCatalogIfEmpty();
+            applyNewProductSeriesDefaults();
+            document.getElementById('newProductSeries').addEventListener('change', applyNewProductSeriesDefaults);
+
+            // 目的港默认与买方地址同步
+            document.getElementById('buyerAddress').addEventListener('input', syncDestinationWithBuyerAddress);
+            document.getElementById('piNo').addEventListener('input', refreshDraftHeader);
+            document.getElementById('piDate').addEventListener('input', refreshDraftHeader);
+            document.getElementById('piValidDate').addEventListener('input', refreshDraftHeader);
+
+            seedDemoOrderIfNeeded();
+            refreshSellerReceivingSummary();
+            refreshDraftHeader();
 
             // 刷新列表
             refreshCustomerList();
             refreshProductList();
         });
+
+        function getUsedPiSet() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(USED_PI_KEY) || '[]');
+                return new Set(Array.isArray(raw) ? raw : []);
+            } catch {
+                return new Set();
+            }
+        }
+
+        function saveUsedPiSet(set) {
+            localStorage.setItem(USED_PI_KEY, JSON.stringify(Array.from(set)));
+        }
+
+        function createDeviceId() {
+            try {
+                if (window.crypto?.getRandomValues) {
+                    const arr = new Uint32Array(2);
+                    window.crypto.getRandomValues(arr);
+                    const raw = (arr[0].toString(36) + arr[1].toString(36)).toUpperCase().replace(/[^A-Z0-9]/g, '');
+                    return raw.slice(0, 6).padEnd(6, '0');
+                }
+            } catch {}
+            return Math.random().toString(36).slice(2, 8).toUpperCase().padEnd(6, '0');
+        }
+
+        function getDeviceId() {
+            const existed = (localStorage.getItem(DEVICE_ID_KEY) || '').trim().toUpperCase();
+            if (existed) return existed;
+            const id = createDeviceId();
+            localStorage.setItem(DEVICE_ID_KEY, id);
+            return id;
+        }
+
+        function getDateParts(date = new Date()) {
+            const y = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            const hh = String(date.getHours()).padStart(2, '0');
+            const mi = String(date.getMinutes()).padStart(2, '0');
+            const ss = String(date.getSeconds()).padStart(2, '0');
+            return { dateKey: `${y}${mm}${dd}`, timeKey: `${hh}${mi}${ss}` };
+        }
+
+        function nextDailyPiCounter(dateKey) {
+            const key = `${PI_COUNTER_PREFIX}${dateKey}`;
+            const curr = Number(localStorage.getItem(key) || '0');
+            const next = curr + 1;
+            localStorage.setItem(key, String(next));
+            return next;
+        }
+
+        function generateUniquePiNo() {
+            const used = getUsedPiSet();
+            const deviceId = getDeviceId();
+
+            for (let i = 0; i < 8; i++) {
+                const { dateKey, timeKey } = getDateParts(new Date());
+                const counter = String(nextDailyPiCounter(dateKey)).padStart(4, '0');
+                const piNo = `PI-${dateKey}-${timeKey}-${deviceId}-${counter}`;
+                if (!used.has(piNo)) return piNo;
+            }
+
+            const { dateKey, timeKey } = getDateParts(new Date());
+            const tail = Math.floor(Math.random() * 1296).toString(36).toUpperCase().padStart(2, '0');
+            return `PI-${dateKey}-${timeKey}-${deviceId}-${tail}`;
+        }
+
+        function lockPiNo(piNo) {
+            const used = getUsedPiSet();
+            used.add(piNo);
+            saveUsedPiSet(used);
+            lockedPiNo = piNo;
+        }
+
+        function ensureUniquePiNoForPreview() {
+            const input = document.getElementById('piNo');
+            let piNo = input.value.trim();
+            const used = getUsedPiSet();
+
+            if (!piNo) {
+                piNo = generateUniquePiNo();
+                input.value = piNo;
+            }
+
+            if (lockedPiNo && piNo === lockedPiNo) {
+                return piNo;
+            }
+
+            if (used.has(piNo)) {
+                piNo = generateUniquePiNo();
+                input.value = piNo;
+                showToast('PI编号已存在，已自动生成新编号');
+            }
+
+            lockPiNo(piNo);
+            return piNo;
+        }
+
+        function syncDestinationWithBuyerAddress() {
+            const addr = document.getElementById('buyerAddress').value.trim();
+            document.getElementById('portOfDest').value = addr;
+        }
+
+        function applyNewProductSeriesDefaults() {
+            const series = document.getElementById('newProductSeries')?.value || 'botanical';
+            const book = PRICE_BOOK[series] || PRICE_BOOK.botanical;
+            const spec = document.getElementById('newProductSpec');
+            const unit = document.getElementById('newProductUnit');
+            const price = document.getElementById('newProductPrice');
+            if (spec && !spec.value.trim()) spec.value = book.spec;
+            if (unit && !unit.value.trim()) unit.value = book.unit;
+            if (price && !price.value.trim()) price.value = String(book.price);
+        }
+
+        function seedCatalogIfEmpty() {
+            if (products.length > 0) return;
+            importFlavorCatalog(true);
+        }
+
+        function seedDemoOrderIfNeeded() {
+            if (localStorage.getItem(DEMO_ORDER_SEEDED_KEY)) return;
+            if (!document.getElementById('buyerCompany').value.trim()) {
+                document.getElementById('buyerCompany').value = 'Pacific Botanics LLC';
+                document.getElementById('buyerContact').value = 'Olivia Carter';
+                document.getElementById('buyerAddress').value = '1201 Harbor Blvd, Long Beach, CA 90802, USA';
+                document.getElementById('buyerTel').value = '+1-562-555-0199';
+                document.getElementById('buyerEmail').value = 'purchasing@pacificbotanics.com';
+                syncDestinationWithBuyerAddress();
+            }
+
+            const firstRow = document.querySelector('#productRows tr');
+            if (firstRow) {
+                firstRow.querySelector('.prod-name').value = 'Blue Dream';
+                firstRow.querySelector('.prod-spec').value = '120mL Bottle';
+                firstRow.querySelector('.prod-unit').value = 'BTL';
+                firstRow.querySelector('.prod-qty').value = '2';
+                firstRow.querySelector('.prod-price').value = '120';
+                calculateRow(Number(firstRow.id.replace('row-', '')));
+            }
+
+            const existing = customers.find(c => c.company === 'Pacific Botanics LLC');
+            if (!existing) {
+                customers.push({
+                    id: Date.now(),
+                    company: 'Pacific Botanics LLC',
+                    contact: 'Olivia Carter',
+                    address: '1201 Harbor Blvd, Long Beach, CA 90802, USA',
+                    tel: '+1-562-555-0199',
+                    email: 'purchasing@pacificbotanics.com'
+                });
+                localStorage.setItem('pi_customers', JSON.stringify(customers));
+            }
+
+            localStorage.setItem(DEMO_ORDER_SEEDED_KEY, '1');
+        }
+
+        function fillJalenOrder(options = {}) {
+            const { silent = false } = options;
+
+            document.getElementById('buyerCompany').value = 'Jalen Cruz';
+            document.getElementById('buyerContact').value = 'Jalen Cruz';
+            document.getElementById('buyerTel').value = '09602986162';
+            document.getElementById('buyerAddress').value = 'Bel air soho suites brgy. bel air makati city zip code 1209';
+            document.getElementById('buyerEmail').value = '';
+            syncDestinationWithBuyerAddress();
+
+            // Persist customer profile for quick reuse in future invoices.
+            const jalenCustomer = {
+                id: Date.now(),
+                company: 'Jalen Cruz',
+                contact: 'Jalen Cruz',
+                address: 'Bel air soho suites brgy. bel air makati city zip code 1209',
+                tel: '09602986162',
+                email: ''
+            };
+            const existingIdx = customers.findIndex(c => (c.company || '').trim().toLowerCase() === 'jalen cruz');
+            if (existingIdx >= 0) {
+                customers[existingIdx] = { ...customers[existingIdx], ...jalenCustomer, id: customers[existingIdx].id || jalenCustomer.id };
+            } else {
+                customers.push(jalenCustomer);
+            }
+            localStorage.setItem('pi_customers', JSON.stringify(customers));
+            refreshCustomerList();
+
+            document.getElementById('shipping').value = '30';
+            document.getElementById('otherCharges').value = '0';
+            document.getElementById('tradeTerm').value = 'DDP';
+            document.getElementById('paymentTerm').value = 'T/T 100% in advance';
+            document.getElementById('deliveryTime').value = 'Ready to ship';
+            document.getElementById('remarks').value = '20 flavors x 120ML, USD 120 per bottle. Receiving type: Crypto.';
+
+            setReceiveType('crypto');
+
+            const tbody = document.getElementById('productRows');
+            if (tbody) tbody.innerHTML = '';
+            productRowId = 0;
+
+            JALEN_ORDER_FLAVORS.forEach((flavor) => {
+                addProductRow({
+                    name: flavor,
+                    spec: '120ML',
+                    unit: 'BTL',
+                    qty: 1,
+                    price: 120
+                });
+            });
+
+            const input = document.getElementById('quickFlavorInput');
+            if (input) input.value = JALEN_ORDER_FLAVORS.join('\n');
+
+            calculateTotals();
+            refreshDraftHeader();
+            if (!silent) showToast('已填入 Jalen Cruz 订单（20款）');
+        }
+
+        function refreshSellerReceivingSummary() {
+            const safe = (v) => v && String(v).trim() ? String(v).trim() : 'N/A';
+
+            document.getElementById('sellerSummaryCompany').textContent = `Company: ${safe(settings.sellerCompanyEn)}`;
+            document.getElementById('sellerSummaryAddress').textContent = `Address: ${safe(settings.sellerAddress)}`;
+            document.getElementById('sellerSummaryContact').textContent = `Contact: ${safe(settings.sellerContact)}`;
+            document.getElementById('sellerSummaryTel').textContent = `Tel: ${safe(settings.sellerTel)}`;
+            document.getElementById('sellerSummaryEmail').textContent = `Email: ${safe(settings.sellerEmail)}`;
+
+            const type = settings.paymentReceiveType || 'bank';
+            const bankBtn = document.getElementById('receiveModeBankBtn');
+            const cryptoBtn = document.getElementById('receiveModeCryptoBtn');
+            if (bankBtn) bankBtn.classList.toggle('active', type === 'bank');
+            if (cryptoBtn) cryptoBtn.classList.toggle('active', type === 'crypto');
+            const block = document.getElementById('receiveSummaryBlock');
+            if (!block) return;
+
+            if (type === 'crypto') {
+                block.innerHTML = `
+                    <p><strong>RECEIVING CRYPTO INFORMATION</strong></p>
+                    <p><strong>Type:</strong> Crypto Receiving</p>
+                    <p><strong>Currency:</strong> ${safe(settings.cryptoCurrency)}</p>
+                    <p><strong>Network:</strong> ${safe(settings.cryptoNetwork)}</p>
+                    <p><strong>Address:</strong> ${safe(settings.cryptoAddress)}</p>
+                    <p><strong>Beneficiary Note:</strong> ${safe(settings.cryptoBeneficiary)}</p>
+                `;
+            } else {
+                block.innerHTML = `
+                    <p><strong>RECEIVING BANK INFORMATION</strong></p>
+                    <p><strong>Type:</strong> Bank Receiving</p>
+                    <p><strong>Beneficiary Name:</strong> ${safe(settings.bankBeneficiary)}</p>
+                    <p><strong>Beneficiary Address:</strong> ${safe(settings.bankBeneficiaryAddress)}</p>
+                    <p><strong>Bank Name:</strong> ${safe(settings.bankName)}</p>
+                    <p><strong>Bank Address:</strong> ${safe(settings.bankAddress)}</p>
+                    <p><strong>Account Number:</strong> ${safe(settings.bankAccount)}</p>
+                    <p><strong>Currency:</strong> ${safe(settings.bankCurrency)}</p>
+                    <p><strong>SWIFT Code:</strong> ${safe(settings.bankSwift)}</p>
+                    <p><strong>Payment Reference:</strong> ${safe(settings.bankReferenceRule)}</p>
+                `;
+            }
+        }
+
+        function setReceiveType(type) {
+            const receiveType = type === 'crypto' ? 'crypto' : 'bank';
+            settings.paymentReceiveType = receiveType;
+            const select = document.getElementById('paymentReceiveType');
+            if (select) select.value = receiveType;
+            toggleReceiveType(receiveType);
+            refreshSellerReceivingSummary();
+        }
+
+        function importFlavorCatalog(silent = false) {
+            const existed = new Set(products.map(p => `${(p.nameEn || p.nameCn || '').toLowerCase()}::${p.series || ''}`));
+            let seedId = Date.now();
+            let added = 0;
+
+            Object.entries(FLAVOR_CATALOG).forEach(([series, names]) => {
+                const book = PRICE_BOOK[series];
+                names.forEach((name) => {
+                    const key = `${name.toLowerCase()}::${series}`;
+                    if (existed.has(key)) return;
+                    products.push({
+                        id: ++seedId,
+                        series,
+                        nameCn: '',
+                        nameEn: name,
+                        spec: book.spec,
+                        unit: book.unit,
+                        price: book.price
+                    });
+                    added += 1;
+                });
+            });
+
+            localStorage.setItem('pi_products', JSON.stringify(products));
+            refreshProductList();
+            if (!silent) {
+                showToast(`已导入口味清单预置 ${added} 条`);
+            }
+        }
 
         // 切换页面
         function switchPage(page) {
@@ -1053,6 +3060,9 @@
             
             document.getElementById(`page-${page}`).classList.add('active');
             document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+            if (page === 'create') {
+                refreshDraftHeader();
+            }
         }
 
         // 添加产品行
@@ -1062,6 +3072,9 @@
             const row = document.createElement('tr');
             row.id = `row-${productRowId}`;
             row.innerHTML = `
+                <td style="text-align:center">
+                    <input type="checkbox" class="row-picker row-select">
+                </td>
                 <td>
                     <input type="text" class="prod-name" placeholder="产品名称" value="${data.name || ''}">
                 </td>
@@ -1085,6 +3098,96 @@
                 </td>
             `;
             tbody.appendChild(row);
+            calculateRow(productRowId);
+        }
+
+        function toggleSelectAllRows(checked) {
+            document.querySelectorAll('#productRows .row-select').forEach(input => {
+                input.checked = checked;
+            });
+            const selectAll = document.getElementById('selectAllRows');
+            if (selectAll) selectAll.checked = checked;
+        }
+
+        function applyBulkEdit() {
+            const bulkSpec = document.getElementById('bulkSpec').value;
+            const bulkQty = document.getElementById('bulkQty').value;
+            const bulkPrice = document.getElementById('bulkPrice').value;
+            const scope = document.getElementById('bulkScope').value;
+
+            const rows = Array.from(document.querySelectorAll('#productRows tr'));
+            const targetRows = scope === 'selected'
+                ? rows.filter(row => row.querySelector('.row-select')?.checked)
+                : rows;
+
+            if (scope === 'selected' && targetRows.length === 0) {
+                showToast('请先勾选要批量修改的行');
+                return;
+            }
+            if (!bulkSpec && bulkQty === '' && bulkPrice === '') {
+                showToast('请至少填写一个批量修改字段');
+                return;
+            }
+
+            targetRows.forEach(row => {
+                if (bulkSpec) row.querySelector('.prod-spec').value = bulkSpec;
+                if (bulkQty !== '') row.querySelector('.prod-qty').value = bulkQty;
+                if (bulkPrice !== '') row.querySelector('.prod-price').value = bulkPrice;
+                calculateRow(Number(row.id.replace('row-', '')));
+            });
+
+            showToast(`已批量更新 ${targetRows.length} 行`);
+        }
+
+        function addMultipleProductRows() {
+            const raw = Number(document.getElementById('addRowsCount')?.value || 1);
+            const count = Math.min(200, Math.max(1, Math.floor(raw)));
+            for (let i = 0; i < count; i++) {
+                addProductRow();
+            }
+            showToast(`已新增 ${count} 行产品`);
+        }
+
+        function addRandomFlavorRows() {
+            const raw = Number(document.getElementById('addRowsCount')?.value || 1);
+            const count = Math.min(200, Math.max(1, Math.floor(raw)));
+            const series = document.getElementById('newProductSeries')?.value || 'botanical';
+            const preset = PRICE_BOOK[series] || PRICE_BOOK.botanical;
+
+            const poolFromLib = products
+                .filter(p => (p.series || 'botanical') === series)
+                .map(p => ({
+                    name: p.nameEn || p.nameCn || '',
+                    spec: p.spec || preset.spec,
+                    unit: p.unit || preset.unit,
+                    price: p.price || preset.price
+                }))
+                .filter(p => p.name);
+
+            const poolFromCatalog = (FLAVOR_CATALOG[series] || []).map(name => ({
+                name,
+                spec: preset.spec,
+                unit: preset.unit,
+                price: preset.price
+            }));
+
+            const pool = poolFromLib.length ? poolFromLib : poolFromCatalog;
+            if (!pool.length) {
+                showToast('当前系列没有可用口味');
+                return;
+            }
+
+            for (let i = 0; i < count; i++) {
+                const item = pool[Math.floor(Math.random() * pool.length)];
+                addProductRow({
+                    name: item.name,
+                    spec: item.spec,
+                    qty: 1,
+                    unit: item.unit,
+                    price: item.price
+                });
+            }
+            showToast(`已随机添加 ${count} 行口味`);
         }
 
         // 计算单行金额
@@ -1184,6 +3287,7 @@
                 document.getElementById('buyerAddress').value = customer.address || '';
                 document.getElementById('buyerTel').value = customer.tel || '';
                 document.getElementById('buyerEmail').value = customer.email || '';
+                syncDestinationWithBuyerAddress();
                 closeModal('customerModal');
                 showToast('已加载客户信息');
             }
@@ -1217,13 +3321,16 @@
 
         // 保存产品
         function saveProduct() {
+            const series = document.getElementById('newProductSeries').value;
+            const pricePreset = PRICE_BOOK[series] || PRICE_BOOK.botanical;
             const product = {
                 id: Date.now(),
+                series,
                 nameCn: document.getElementById('newProductNameCn').value,
                 nameEn: document.getElementById('newProductNameEn').value,
-                spec: document.getElementById('newProductSpec').value,
-                unit: document.getElementById('newProductUnit').value || 'PCS',
-                price: parseFloat(document.getElementById('newProductPrice').value) || 0
+                spec: document.getElementById('newProductSpec').value || pricePreset.spec,
+                unit: document.getElementById('newProductUnit').value || pricePreset.unit,
+                price: parseFloat(document.getElementById('newProductPrice').value) || pricePreset.price
             };
 
             if (!product.nameCn && !product.nameEn) {
@@ -1257,7 +3364,7 @@
                 <div class="saved-item">
                     <div class="saved-item-info">
                         <h4>${p.nameEn || p.nameCn}</h4>
-                        <p>${p.nameCn ? p.nameCn + ' | ' : ''}${p.spec || ''} | USD ${formatMoney(p.price)}</p>
+                        <p>${p.series ? `[${p.series.toUpperCase()}] ` : ''}${p.nameCn ? p.nameCn + ' | ' : ''}${p.spec || ''} | USD ${formatMoney(p.price)}</p>
                     </div>
                     <div class="saved-item-actions">
                         <button class="btn btn-sm btn-secondary" onclick="addProductFromLib(${p.id})">添加</button>
@@ -1275,11 +3382,132 @@
                     name: product.nameEn || product.nameCn,
                     spec: product.spec,
                     unit: product.unit,
+                    qty: 1,
                     price: product.price
                 });
                 closeModal('productModal');
                 showToast('产品已添加');
             }
+        }
+
+        function clearQuickFlavorInput() {
+            const input = document.getElementById('quickFlavorInput');
+            if (input) input.value = '';
+        }
+
+        function findBestProductByFlavor(name) {
+            const q = name.trim().toLowerCase();
+            if (!q) return null;
+            const exact = products.find(p => (p.nameEn || p.nameCn || '').trim().toLowerCase() === q);
+            if (exact) return exact;
+            const contains = products.find(p => (p.nameEn || p.nameCn || '').toLowerCase().includes(q));
+            if (contains) return contains;
+            const reverseContains = products.find(p => q.includes((p.nameEn || p.nameCn || '').trim().toLowerCase()));
+            return reverseContains || null;
+        }
+
+        function importQuickFlavors(rawOverride = null) {
+            const raw = (typeof rawOverride === 'string')
+                ? rawOverride
+                : (document.getElementById('quickFlavorInput')?.value || '');
+            if (!raw.trim()) {
+                showToast('请先粘贴口味名称');
+                return;
+            }
+
+            const names = raw
+                .split(/[\n,;，；]+/)
+                .map(s => s.trim())
+                .filter(Boolean);
+
+            if (names.length === 0) {
+                showToast('未识别到有效口味名称');
+                return;
+            }
+
+            const notFound = [];
+            let added = 0;
+
+            names.forEach((name) => {
+                const product = findBestProductByFlavor(name);
+                if (!product) {
+                    notFound.push(name);
+                    return;
+                }
+                addProductRow({
+                    name: product.nameEn || product.nameCn,
+                    spec: product.spec || '',
+                    unit: product.unit || 'BTL',
+                    qty: 1,
+                    price: Number(product.price) || 0
+                });
+                added += 1;
+            });
+
+            if (added > 0) {
+                calculateTotals();
+            }
+
+            if (notFound.length > 0) {
+                showToast(`已导入 ${added} 条，未识别: ${notFound.slice(0, 3).join(', ')}${notFound.length > 3 ? '...' : ''}`);
+            } else {
+                showToast(`已导入 ${added} 条口味`);
+            }
+        }
+
+        async function importFromClipboard() {
+            const input = document.getElementById('quickFlavorInput');
+            if (!input) {
+                showToast('未找到导入输入框，请刷新页面后重试');
+                return;
+            }
+
+            try {
+                if (!navigator.clipboard || !navigator.clipboard.readText) {
+                    const manualText = window.prompt('当前环境不支持自动读取剪切板，请手动粘贴口味列表：', '');
+                    if (!manualText || !manualText.trim()) {
+                        showToast('未粘贴任何内容');
+                        return;
+                    }
+                    input.value = manualText;
+                    importQuickFlavors(manualText);
+                    return;
+                }
+                const text = await navigator.clipboard.readText();
+                if (!text || !text.trim()) {
+                    showToast('剪贴板为空');
+                    return;
+                }
+                input.value = text;
+                importQuickFlavors(text);
+            } catch (error) {
+                const manualText = window.prompt('读取剪切板失败，请手动粘贴口味列表：', input.value || '');
+                if (!manualText || !manualText.trim()) {
+                    showToast('未粘贴任何内容');
+                    input.focus();
+                    return;
+                }
+                input.value = manualText;
+                importQuickFlavors(manualText);
+            }
+        }
+
+        function toggleReceiveType(forcedType = null) {
+            const select = document.getElementById('paymentReceiveType');
+            const type = (forcedType === 'crypto' || forcedType === 'bank')
+                ? forcedType
+                : (select?.value || settings.paymentReceiveType || 'bank');
+            if (select) select.value = type;
+            document.getElementById('receiveBankFields').classList.toggle('hidden', type !== 'bank');
+            document.getElementById('receiveCryptoFields').classList.toggle('hidden', type !== 'crypto');
+            settings.paymentReceiveType = type;
+            const bankBtn = document.getElementById('receiveModeBankBtn');
+            const cryptoBtn = document.getElementById('receiveModeCryptoBtn');
+            if (bankBtn) bankBtn.classList.toggle('active', type === 'bank');
+            if (cryptoBtn) cryptoBtn.classList.toggle('active', type === 'crypto');
+            try {
+                localStorage.setItem('pi_settings', JSON.stringify(settings));
+            } catch {}
         }
 
         // 删除产品
@@ -1300,7 +3528,7 @@
                     <div class="saved-item" onclick="addProductFromLib(${p.id})">
                         <div class="saved-item-info">
                             <h4>${p.nameEn || p.nameCn}</h4>
-                            <p>${p.spec || ''} | USD ${formatMoney(p.price)}</p>
+                            <p>${p.series ? `[${p.series.toUpperCase()}] ` : ''}${p.spec || ''} | USD ${formatMoney(p.price)}</p>
                         </div>
                     </div>
                 `).join('');
@@ -1317,33 +3545,323 @@
                 sellerContact: document.getElementById('sellerContact').value,
                 sellerTel: document.getElementById('sellerTel').value,
                 sellerEmail: document.getElementById('sellerEmail').value,
+                paymentReceiveType: document.getElementById('paymentReceiveType').value,
                 bankBeneficiary: document.getElementById('bankBeneficiary').value,
+                bankBeneficiaryAddress: document.getElementById('bankBeneficiaryAddress')?.value || '',
+                bankBeneficiaryCountry: document.getElementById('bankBeneficiaryCountry')?.value || '',
                 bankName: document.getElementById('bankName').value,
                 bankAccount: document.getElementById('bankAccount').value,
                 bankSwift: document.getElementById('bankSwift').value,
-                bankAddress: document.getElementById('bankAddress').value
+                bankAddress: document.getElementById('bankAddress').value,
+                bankCode: document.getElementById('bankCode')?.value || '',
+                bankCurrency: document.getElementById('bankCurrency')?.value || '',
+                bankReferenceRule: document.getElementById('bankReferenceRule')?.value || '',
+                intermediaryNotice: document.getElementById('intermediaryNotice')?.value || '',
+                intermediaryBankName: document.getElementById('intermediaryBankName')?.value || '',
+                intermediarySwift: document.getElementById('intermediarySwift')?.value || '',
+                intermediaryBankCode: document.getElementById('intermediaryBankCode')?.value || '',
+                intermediaryBranchName: document.getElementById('intermediaryBranchName')?.value || '',
+                intermediaryBranchCode: document.getElementById('intermediaryBranchCode')?.value || '',
+                intermediaryBankAddress: document.getElementById('intermediaryBankAddress')?.value || '',
+                cryptoCurrency: document.getElementById('cryptoCurrency').value,
+                cryptoNetwork: document.getElementById('cryptoNetwork').value,
+                cryptoAddress: document.getElementById('cryptoAddress').value,
+                cryptoBeneficiary: document.getElementById('cryptoBeneficiary').value
             };
             localStorage.setItem('pi_settings', JSON.stringify(settings));
+            refreshSellerReceivingSummary();
             showToast('设置已保存');
         }
 
         // 加载设置
         function loadSettings() {
+            settings = { ...DEFAULT_SETTINGS, ...settings };
+            Object.keys(DEFAULT_SETTINGS).forEach((key) => {
+                const v = settings[key];
+                if (typeof v === 'string' && !v.trim()) {
+                    settings[key] = DEFAULT_SETTINGS[key];
+                }
+            });
+            if (!String(settings.cryptoAddress || '').trim()) {
+                settings.cryptoAddress = DEFAULT_SETTINGS.cryptoAddress;
+            }
+            if (!String(settings.cryptoNetwork || '').trim()) {
+                settings.cryptoNetwork = DEFAULT_SETTINGS.cryptoNetwork;
+            }
+            if (!String(settings.cryptoCurrency || '').trim()) {
+                settings.cryptoCurrency = DEFAULT_SETTINGS.cryptoCurrency;
+            }
+            localStorage.setItem('pi_settings', JSON.stringify(settings));
             if (settings.sellerCompanyCn) document.getElementById('sellerCompanyCn').value = settings.sellerCompanyCn;
             if (settings.sellerCompanyEn) document.getElementById('sellerCompanyEn').value = settings.sellerCompanyEn;
             if (settings.sellerAddress) document.getElementById('sellerAddress').value = settings.sellerAddress;
             if (settings.sellerContact) document.getElementById('sellerContact').value = settings.sellerContact;
             if (settings.sellerTel) document.getElementById('sellerTel').value = settings.sellerTel;
             if (settings.sellerEmail) document.getElementById('sellerEmail').value = settings.sellerEmail;
+            if (settings.paymentReceiveType) document.getElementById('paymentReceiveType').value = settings.paymentReceiveType;
             if (settings.bankBeneficiary) document.getElementById('bankBeneficiary').value = settings.bankBeneficiary;
+            if (settings.bankBeneficiaryAddress && document.getElementById('bankBeneficiaryAddress')) document.getElementById('bankBeneficiaryAddress').value = settings.bankBeneficiaryAddress;
+            if (settings.bankBeneficiaryCountry && document.getElementById('bankBeneficiaryCountry')) document.getElementById('bankBeneficiaryCountry').value = settings.bankBeneficiaryCountry;
             if (settings.bankName) document.getElementById('bankName').value = settings.bankName;
             if (settings.bankAccount) document.getElementById('bankAccount').value = settings.bankAccount;
             if (settings.bankSwift) document.getElementById('bankSwift').value = settings.bankSwift;
             if (settings.bankAddress) document.getElementById('bankAddress').value = settings.bankAddress;
+            if (settings.bankCode && document.getElementById('bankCode')) document.getElementById('bankCode').value = settings.bankCode;
+            if (settings.bankCurrency && document.getElementById('bankCurrency')) document.getElementById('bankCurrency').value = settings.bankCurrency;
+            if (settings.bankReferenceRule && document.getElementById('bankReferenceRule')) document.getElementById('bankReferenceRule').value = settings.bankReferenceRule;
+            if (settings.intermediaryNotice && document.getElementById('intermediaryNotice')) document.getElementById('intermediaryNotice').value = settings.intermediaryNotice;
+            if (settings.intermediaryBankName && document.getElementById('intermediaryBankName')) document.getElementById('intermediaryBankName').value = settings.intermediaryBankName;
+            if (settings.intermediarySwift && document.getElementById('intermediarySwift')) document.getElementById('intermediarySwift').value = settings.intermediarySwift;
+            if (settings.intermediaryBankCode && document.getElementById('intermediaryBankCode')) document.getElementById('intermediaryBankCode').value = settings.intermediaryBankCode;
+            if (settings.intermediaryBranchName && document.getElementById('intermediaryBranchName')) document.getElementById('intermediaryBranchName').value = settings.intermediaryBranchName;
+            if (settings.intermediaryBranchCode && document.getElementById('intermediaryBranchCode')) document.getElementById('intermediaryBranchCode').value = settings.intermediaryBranchCode;
+            if (settings.intermediaryBankAddress && document.getElementById('intermediaryBankAddress')) document.getElementById('intermediaryBankAddress').value = settings.intermediaryBankAddress;
+            if (settings.cryptoCurrency) document.getElementById('cryptoCurrency').value = settings.cryptoCurrency;
+            if (settings.cryptoNetwork) document.getElementById('cryptoNetwork').value = settings.cryptoNetwork;
+            if (settings.cryptoAddress) document.getElementById('cryptoAddress').value = settings.cryptoAddress;
+            if (settings.cryptoBeneficiary) document.getElementById('cryptoBeneficiary').value = settings.cryptoBeneficiary;
+            toggleReceiveType();
+            refreshSellerReceivingSummary();
+        }
+
+        function renderPiBarcode(piNo) {
+            const target = document.getElementById('piFooterBarcode') || document.getElementById('piBarcode');
+            if (!target) return;
+            renderBarcodeSvg(target, piNo);
+        }
+
+        function renderBarcodeSvg(target, value) {
+            if (!target) return;
+            const raw = String(value || '').trim();
+            const content = raw.toUpperCase().replace(/[^0-9A-Z\-\.\s\$\/\+%]/g, '-');
+            if (!content) {
+                target.innerHTML = '';
+                return;
+            }
+
+            try {
+                const svgNS = 'http://www.w3.org/2000/svg';
+                target.innerHTML = '';
+                target.setAttribute('width', '228');
+                target.setAttribute('height', '48');
+                target.setAttribute('viewBox', '0 0 228 48');
+
+                const text = `*${content}*`;
+                const sequences = [];
+                for (const ch of text) {
+                    const seq = CODE39_MAP[ch];
+                    if (!seq) throw new Error(`Unsupported Code39 char: ${ch}`);
+                    sequences.push(seq);
+                }
+
+                let totalUnits = 0;
+                sequences.forEach((seq, idx) => {
+                    for (const c of seq) totalUnits += c === 'w' ? 2.5 : 1;
+                    if (idx < sequences.length - 1) totalUnits += 1; // inter-character gap
+                });
+
+                const leftPad = 2;
+                const drawWidth = 224;
+                const scale = drawWidth / totalUnits;
+                let x = leftPad;
+
+                sequences.forEach((seq, idx) => {
+                    for (let i = 0; i < seq.length; i++) {
+                        const isBar = i % 2 === 0;
+                        const w = (seq[i] === 'w' ? 2.5 : 1) * scale;
+                        if (isBar) {
+                            const rect = document.createElementNS(svgNS, 'rect');
+                            rect.setAttribute('x', x.toFixed(2));
+                            rect.setAttribute('y', '1');
+                            rect.setAttribute('width', w.toFixed(2));
+                            rect.setAttribute('height', '44');
+                            rect.setAttribute('fill', '#111111');
+                            target.appendChild(rect);
+                        }
+                        x += w;
+                    }
+                    if (idx < sequences.length - 1) x += 1 * scale;
+                });
+            } catch (error) {
+                // Fallback: keep at least a visible marker in environments where SVG draw fails.
+                target.innerHTML = '';
+                const svgNS = 'http://www.w3.org/2000/svg';
+                const text = document.createElementNS(svgNS, 'text');
+                text.setAttribute('x', '4');
+                text.setAttribute('y', '30');
+                text.setAttribute('font-size', '14');
+                text.setAttribute('fill', '#111111');
+                text.textContent = `CODE39 ${content}`;
+                target.appendChild(text);
+            }
+        }
+
+        function refreshDraftHeader() {
+            const piNo = document.getElementById('piNo').value.trim() || '-';
+            const piDate = document.getElementById('piDate').value || '-';
+            document.getElementById('createPiNoLine').textContent = `PI No: ${piNo}`;
+            document.getElementById('createDateLine').textContent = `Date: ${piDate} | Validity: 30 Days`;
+            document.getElementById('createBarcodeLabel').textContent = `Barcode: ${piNo}`;
+            if (piNo !== '-') {
+                renderBarcodeSvg(document.getElementById('createPiBarcode'), piNo);
+            } else {
+                document.getElementById('createPiBarcode').innerHTML = '';
+            }
+        }
+
+        function containsCJK(text) {
+            return /[\u3400-\u9FFF]/.test(text || '');
+        }
+
+        function validateEnglishOnlyForPreview(productData) {
+            const fields = [
+                { label: 'Buyer Company', value: document.getElementById('buyerCompany').value },
+                { label: 'Buyer Contact', value: document.getElementById('buyerContact').value },
+                { label: 'Buyer Address', value: document.getElementById('buyerAddress').value },
+                { label: 'Buyer Tel', value: document.getElementById('buyerTel').value },
+                { label: 'Buyer Email', value: document.getElementById('buyerEmail').value },
+                { label: 'Port of Loading', value: document.getElementById('portOfLoading').value },
+                { label: 'Port of Destination', value: document.getElementById('portOfDest').value },
+                { label: 'Delivery Time', value: document.getElementById('deliveryTime').value },
+                { label: 'Remarks', value: document.getElementById('remarks').value },
+                { label: 'Seller Company', value: settings.sellerCompanyEn || '' },
+                { label: 'Seller Address', value: settings.sellerAddress || '' },
+                { label: 'Seller Contact', value: settings.sellerContact || '' },
+                { label: 'Seller Tel', value: settings.sellerTel || '' },
+                { label: 'Seller Email', value: settings.sellerEmail || '' },
+                { label: 'Bank Beneficiary', value: settings.bankBeneficiary || '' },
+                { label: 'Bank Name', value: settings.bankName || '' },
+                { label: 'Bank Address', value: settings.bankAddress || '' },
+                { label: 'Intermediary Notice', value: settings.intermediaryNotice || '' },
+                { label: 'Intermediary Bank Name', value: settings.intermediaryBankName || '' },
+                { label: 'Intermediary SWIFT', value: settings.intermediarySwift || '' },
+                { label: 'Intermediary Bank Code', value: settings.intermediaryBankCode || '' },
+                { label: 'Intermediary Branch Name', value: settings.intermediaryBranchName || '' },
+                { label: 'Intermediary Branch Code', value: settings.intermediaryBranchCode || '' },
+                { label: 'Intermediary Bank Address', value: settings.intermediaryBankAddress || '' },
+                { label: 'Crypto Currency', value: settings.cryptoCurrency || '' },
+                { label: 'Crypto Network', value: settings.cryptoNetwork || '' },
+                { label: 'Crypto Address', value: settings.cryptoAddress || '' },
+                { label: 'Crypto Beneficiary Note', value: settings.cryptoBeneficiary || '' }
+            ];
+
+            productData.forEach((item, idx) => {
+                fields.push({ label: `Product ${idx + 1} Name`, value: item.name });
+                fields.push({ label: `Product ${idx + 1} Spec`, value: item.spec });
+            });
+
+            const hit = fields.find(f => f.value && containsCJK(f.value));
+            if (hit) {
+                showToast(`预览需英文内容，请检查: ${hit.label}`);
+                return false;
+            }
+            return true;
+        }
+
+        function validateBankTransferCompleteness() {
+            const selectedType = document.getElementById('paymentReceiveType')?.value || settings.paymentReceiveType || 'bank';
+            settings.paymentReceiveType = selectedType;
+            if (selectedType !== 'bank') return true;
+            const required = [
+                ['Beneficiary Name', settings.bankBeneficiary],
+                ['Beneficiary Address', settings.bankBeneficiaryAddress],
+                ['Beneficiary Country/Region', settings.bankBeneficiaryCountry],
+                ['Bank Name', settings.bankName],
+                ['Bank SWIFT', settings.bankSwift],
+                ['Bank Account No.', settings.bankAccount],
+                ['Bank Address', settings.bankAddress],
+                ['Bank Code', settings.bankCode],
+                ['Account Currency', settings.bankCurrency],
+                ['Payment Reference Requirement', settings.bankReferenceRule]
+            ];
+            const miss = required.find(([, v]) => !String(v || '').trim());
+            if (miss) {
+                showToast(`收款信息不完整，请补充: ${miss[0]}`);
+                return false;
+            }
+            return true;
+        }
+
+        function printCurrentPI() {
+            try {
+                const handler = window.webkit?.messageHandlers?.nativePrint;
+                if (handler && typeof handler.postMessage === 'function') {
+                    handler.postMessage({ type: 'print' });
+                    return;
+                }
+            } catch {}
+            window.print();
+        }
+
+        function exportCurrentPDF() {
+            const piNo = (document.getElementById('piNo')?.value || 'Proforma-Invoice').trim();
+            const preview = document.getElementById('previewContent');
+            if (preview && /请先填写表单并点击\"生成预览\"/.test(preview.textContent || '')) {
+                showToast('请先生成预览再导出 PDF');
+                return;
+            }
+            // Ensure barcode is present in preview before exporting.
+            try {
+                const footerBarcode = preview?.querySelector('#piFooterBarcode');
+                if (footerBarcode && !String(footerBarcode.innerHTML || '').trim()) {
+                    renderBarcodeSvg(footerBarcode, piNo);
+                } else {
+                    renderPiBarcode(piNo);
+                }
+            } catch {}
+            // Popup-free export path: print in current window to avoid pop-up blockers.
+            switchPage('preview');
+            const cleanup = () => {
+                document.body.classList.remove('pdf-export-mode');
+            };
+            document.body.classList.add('pdf-export-mode');
+            window.addEventListener('afterprint', cleanup, { once: true });
+            setTimeout(() => {
+                try {
+                    window.print();
+                } catch {}
+                setTimeout(cleanup, 1500);
+            }, 80);
+            showToast(`正在导出 ${piNo}，请在打印窗口选择“存储为 PDF”`);
+        }
+
+        function prepareExportPagination() {
+            // Intentionally no-op. PDF uses a fixed, single-pass HTML skeleton template.
+        }
+
+        function restoreExportPagination() {
+            // Intentionally no-op. No DOM mutation for PDF pagination.
+        }
+
+        function renderProductRows(productData) {
+            // Strict mapping: one item object -> one and only one <tr>.
+            return productData.map((item, index) => {
+                const safeName = item.name || '-';
+                const safeSpec = `${item.spec || ''}${item.spec && item.unit ? ' | ' : ''}${item.unit || ''}`.trim();
+                return `
+                    <tr class="no-break">
+                        <td class="col-no">${index + 1}</td>
+                        <td class="col-desc">
+                            <div>${safeName}</div>
+                            ${safeSpec ? `<span class="desc-sub">${safeSpec}</span>` : ''}
+                        </td>
+                        <td class="col-qty">${item.qty}</td>
+                        <td class="col-unit-price">${formatMoney(item.price)}</td>
+                        <td class="col-amount">${formatMoney(item.amount)}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         // 生成预览
         function generatePreview() {
+            const piNo = ensureUniquePiNoForPreview();
+            const buyerCompany = document.getElementById('buyerCompany').value.trim();
+            if (!buyerCompany) {
+                showToast('请先填写买方公司名称');
+                return;
+            }
+
             // 收集产品数据
             const productData = [];
             let subtotal = 0;
@@ -1355,127 +3873,156 @@
                 const price = parseFloat(row.querySelector('.prod-price')?.value) || 0;
                 const amount = qty * price;
                 
-                if (name || qty > 0) {
+                if (name && qty > 0) {
                     productData.push({ name, spec, qty, unit, price, amount });
                     subtotal += amount;
                 }
             });
 
+            if (productData.length === 0) {
+                showToast('请至少添加一行有效产品（名称且数量>0）');
+                return;
+            }
+
+            if (!validateEnglishOnlyForPreview(productData)) {
+                return;
+            }
+            if (!validateBankTransferCompleteness()) {
+                return;
+            }
+
             const shipping = parseFloat(document.getElementById('shipping').value) || 0;
             const other = parseFloat(document.getElementById('otherCharges').value) || 0;
             const total = subtotal + shipping + other;
+            const receiveType = document.getElementById('paymentReceiveType')?.value || settings.paymentReceiveType || 'bank';
+            settings.paymentReceiveType = receiveType;
+            const issueDate = document.getElementById('piDate').value;
+            const validityText = '30 Days';
+            const deliveryTimeRaw = String(document.getElementById('deliveryTime').value || '').trim();
+            const isPureNumber = /^\d+(\.\d+)?$/.test(deliveryTimeRaw);
+            const deliveryTimeText = deliveryTimeRaw
+                ? (isPureNumber ? `${deliveryTimeRaw} Days` : deliveryTimeRaw)
+                : '30 Days';
+            const beneficiaryAddrRaw = String(settings.bankBeneficiaryAddress || '').trim();
+            const beneficiaryAddr = (beneficiaryAddrRaw && beneficiaryAddrRaw !== '(Your English Address)')
+                ? beneficiaryAddrRaw
+                : (settings.sellerAddress || DEFAULT_SETTINGS.sellerAddress);
+            const disclaimerText = 'DISCLAIMER: Industrial aroma raw materials only. Buyer is responsible for local compliance and import requirements. Seller liability is limited to goods supplied as described.'
+                .replace(/\s+/g, ' ')
+                .trim();
 
-            // 生成HTML
+            const sellerCompany = settings.sellerCompanyEn || 'Guangzhou Terplax Biotechnology Co., Ltd.';
+            const sellerAddress = settings.sellerAddress || 'Huanan City, Pinghu, Longgang District, Shenzhen, China.';
+            const sellerContact = settings.sellerContact || 'Zane Yan';
+            const sellerTel = settings.sellerTel || '+1 912-217-8368';
+            const sellerEmail = settings.sellerEmail || 'zaneyan@terplax.com';
+
+            const buyerAddress = document.getElementById('buyerAddress').value || '1201 Harbor Blvd, Long Beach, CA 90802, USA';
+            const buyerContact = document.getElementById('buyerContact').value || 'N/A';
+            const buyerTel = document.getElementById('buyerTel').value || 'N/A';
+            const buyerEmail = document.getElementById('buyerEmail').value || 'N/A';
+
+            const bankInfoHtml = receiveType === 'crypto'
+                ? `
+                    <p class="bank-line">Type: Crypto Receiving</p>
+                    <p class="bank-line">Currency: ${settings.cryptoCurrency || 'N/A'}</p>
+                    <p class="bank-line">Network: ${settings.cryptoNetwork || 'N/A'}</p>
+                    <p class="bank-line">Address: ${settings.cryptoAddress || 'N/A'}</p>
+                    <p class="bank-line">Beneficiary Note: ${settings.cryptoBeneficiary || 'N/A'}</p>
+                `
+                : `
+                    <p class="bank-line">Beneficiary Name: ${settings.bankBeneficiary || 'ZHANG YAN'}</p>
+                    <p class="bank-line">Beneficiary Address: ${beneficiaryAddr || 'Huanan City, Pinghu, Longgang District, Shenzhen, China'}</p>
+                    <p class="bank-line">Bank Name: ${settings.bankName || 'ZA Bank Limited'}</p>
+                    <p class="bank-line">Bank Address: ${settings.bankAddress || 'Core F, Cyberport 3, 100 Cyberport Road, Hong Kong'}</p>
+                    <p class="bank-line">Account Number: <span class="bank-key">${settings.bankAccount || '880013518561'}</span></p>
+                    <p class="bank-line">SWIFT Code: <span class="bank-key">${settings.bankSwift || 'AABLHKHH'}</span></p>
+                    <p class="intermediary-note">Intermediary Bank: ${settings.intermediaryBankName || 'Citibank N.A. Hong Kong'} | SWIFT: ${settings.intermediarySwift || 'CITIHKHXXXX'}</p>
+                `;
+
+            const remarks = document.getElementById('remarks').value.trim();
+
             const preview = document.getElementById('previewContent');
             preview.innerHTML = `
-                <div class="pi-header">
-                    <h1>PROFORMA INVOICE</h1>
-                    <p class="pi-no">PI No: ${document.getElementById('piNo').value}</p>
-                    <p>Date: ${document.getElementById('piDate').value} | Valid Until: ${document.getElementById('piValidDate').value}</p>
-                </div>
-
-                <div class="pi-parties">
-                    <div class="pi-party">
-                        <h3>Seller / 卖方</h3>
-                        <p>
-                            <strong>${settings.sellerCompanyEn || 'Your Company Name'}</strong><br>
-                            ${settings.sellerAddress || 'Company Address'}<br>
-                            ${settings.sellerContact ? 'Contact: ' + settings.sellerContact + '<br>' : ''}
-                            ${settings.sellerTel ? 'Tel: ' + settings.sellerTel + '<br>' : ''}
-                            ${settings.sellerEmail ? 'Email: ' + settings.sellerEmail : ''}
-                        </p>
+                <div class="preview-paper apple-rebuild">
+                  <div class="pi-main-header section-block" style="margin-top: 0;">
+                    <div>
+                      <div class="brand-logo">TERPLA<span class="brand-tail">X</span></div>
+                      <div class="seller-inline">
+                        <span class="seller-line">${sellerCompany}</span>
+                        <span class="seller-line">${sellerAddress}</span>
+                        <span class="seller-contacts">Contact: ${sellerContact}, Tel: ${sellerTel}, Email: ${sellerEmail}</span>
+                      </div>
                     </div>
-                    <div class="pi-party">
-                        <h3>Buyer / 买方</h3>
-                        <p>
-                            <strong>${document.getElementById('buyerCompany').value || 'Buyer Company'}</strong><br>
-                            ${document.getElementById('buyerAddress').value || ''}<br>
-                            ${document.getElementById('buyerContact').value ? 'Contact: ' + document.getElementById('buyerContact').value + '<br>' : ''}
-                            ${document.getElementById('buyerTel').value ? 'Tel: ' + document.getElementById('buyerTel').value + '<br>' : ''}
-                            ${document.getElementById('buyerEmail').value ? 'Email: ' + document.getElementById('buyerEmail').value : ''}
-                        </p>
+                    <div class="meta-block">
+                      <div class="meta-title">PROFORMA INVOICE</div>
+                      <div class="meta-line">PI No: ${piNo}</div>
+                      <div class="meta-line">Date: ${issueDate}</div>
+                      <div class="meta-line">Validity: ${validityText}</div>
                     </div>
-                </div>
+                  </div>
 
-                <table class="pi-table">
-                    <thead>
-                        <tr>
-                            <th>No.</th>
-                            <th>Description</th>
-                            <th>Specification</th>
-                            <th class="text-right">Qty</th>
-                            <th>Unit</th>
-                            <th class="text-right">Unit Price (USD)</th>
-                            <th class="text-right">Amount (USD)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${productData.map((p, i) => `
-                            <tr>
-                                <td>${i + 1}</td>
-                                <td>${p.name}</td>
-                                <td>${p.spec}</td>
-                                <td class="text-right">${p.qty}</td>
-                                <td>${p.unit}</td>
-                                <td class="text-right">${formatMoney(p.price)}</td>
-                                <td class="text-right">${formatMoney(p.amount)}</td>
-                            </tr>
-                        `).join('')}
-                        <tr>
-                            <td colspan="6" class="text-right"><strong>Subtotal</strong></td>
-                            <td class="text-right">${formatMoney(subtotal)}</td>
-                        </tr>
-                        ${shipping > 0 ? `
-                        <tr>
-                            <td colspan="6" class="text-right">Shipping</td>
-                            <td class="text-right">${formatMoney(shipping)}</td>
-                        </tr>
-                        ` : ''}
-                        ${other > 0 ? `
-                        <tr>
-                            <td colspan="6" class="text-right">Other Charges</td>
-                            <td class="text-right">${formatMoney(other)}</td>
-                        </tr>
-                        ` : ''}
-                        <tr>
-                            <td colspan="6" class="text-right"><strong>TOTAL</strong></td>
-                            <td class="text-right"><strong>USD ${formatMoney(total)}</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
+                  <div class="buyer-block section-block">
+                    <p><strong>${document.getElementById('buyerCompany').value || 'Buyer Company'}</strong></p>
+                    <p>${buyerAddress}</p>
+                    <p>Contact: ${buyerContact}, Tel: ${buyerTel}, Email: ${buyerEmail}</p>
+                  </div>
 
-                <div class="pi-terms">
-                    <h3>Terms & Conditions</h3>
-                    <p><strong>Trade Term:</strong> ${document.getElementById('tradeTerm').value}</p>
-                    <p><strong>Port of Loading:</strong> ${document.getElementById('portOfLoading').value || 'N/A'}</p>
-                    <p><strong>Port of Destination:</strong> ${document.getElementById('portOfDest').value || 'N/A'}</p>
-                    <p><strong>Payment Term:</strong> ${document.getElementById('paymentTerm').value}</p>
-                    <p><strong>Delivery Time:</strong> ${document.getElementById('deliveryTime').value || 'N/A'}</p>
-                    ${document.getElementById('remarks').value ? `<p><strong>Remarks:</strong> ${document.getElementById('remarks').value}</p>` : ''}
-                </div>
+                  <div class="table-summary-wrap section-block">
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th class="col-no">No.</th>
+                          <th class="col-desc">Description</th>
+                          <th class="col-qty">Qty</th>
+                          <th class="col-unit-price">Unit Price</th>
+                          <th class="col-amount">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${renderProductRows(productData)}
+                      </tbody>
+                    </table>
 
-                <div class="pi-bank">
-                    <h3>Bank Details / 银行信息</h3>
-                    <p><strong>Beneficiary:</strong> ${settings.bankBeneficiary || 'N/A'}</p>
-                    <p><strong>Bank Name:</strong> ${settings.bankName || 'N/A'}</p>
-                    <p><strong>Account No.:</strong> ${settings.bankAccount || 'N/A'}</p>
-                    <p><strong>SWIFT Code:</strong> ${settings.bankSwift || 'N/A'}</p>
-                    <p><strong>Bank Address:</strong> ${settings.bankAddress || 'N/A'}</p>
-                </div>
+                    <div class="totals">
+                      <div class="total-row"><span>Subtotal</span><span class="money-nowrap">USD ${formatMoney(subtotal)}</span></div>
+                      <div class="total-row"><span>Shipping</span><span class="money-nowrap">USD ${formatMoney(shipping)}</span></div>
+                      <div class="total-row"><span>Other Charges</span><span class="money-nowrap">USD ${formatMoney(other)}</span></div>
+                      <div class="total-row grand"><span>TOTAL</span><span class="money-nowrap">USD ${formatMoney(total)}</span></div>
+                    </div>
+                  </div>
 
-                <div style="margin-top:40px;display:flex;justify-content:space-between">
-                    <div style="text-align:center;width:45%">
-                        <div style="border-top:1px solid #333;padding-top:10px;margin-top:60px">
-                            Seller's Signature & Stamp
+                  <div class="terms-bank-table section-block">
+                    <div class="terms-bank-row">
+                      <div class="terms-bank-cell">
+                        <div class="soft-card bank-info-container">
+                          <div class="card-title">${receiveType === 'crypto' ? 'RECEIVING CRYPTO INFORMATION' : 'RECEIVING BANK INFORMATION'}</div>
+                          ${bankInfoHtml}
                         </div>
-                    </div>
-                    <div style="text-align:center;width:45%">
-                        <div style="border-top:1px solid #333;padding-top:10px;margin-top:60px">
-                            Buyer's Signature & Stamp
+                      </div>
+                      <div class="terms-bank-cell">
+                        <div class="soft-card terms-container">
+                          <div class="card-title">TERMS & CONDITIONS</div>
+                          <p>Trade Term: ${document.getElementById('tradeTerm').value || 'DDP'}</p>
+                          <p>Port of Loading: ${document.getElementById('portOfLoading').value || 'Guangdong, Shenzhen'}</p>
+                          <p>Port of Destination: ${document.getElementById('portOfDest').value || 'N/A'}</p>
+                          <p>Payment Term: ${document.getElementById('paymentTerm').value || 'T/T 100% in advance'}</p>
+                          <p>Delivery Time: ${deliveryTimeText}</p>
+                          <p>Validity: 30 days from the date of issue.</p>
+                          ${remarks ? `<p>Remarks: ${remarks}</p>` : ''}
                         </div>
+                      </div>
                     </div>
+                  </div>
+
+                  <div class="footer-lite section-block">
+                    <svg id="piFooterBarcode"></svg>
+                    <div>Barcode: ${piNo}</div>
+                    <span class="disclaimer-text">${disclaimerText}</span>
+                  </div>
                 </div>
             `;
+            renderPiBarcode(piNo);
 
             switchPage('preview');
             showToast('预览已生成');
@@ -1490,16 +4037,23 @@
                 document.getElementById('buyerTel').value = '';
                 document.getElementById('buyerEmail').value = '';
                 document.getElementById('productRows').innerHTML = '';
+                const selectAll = document.getElementById('selectAllRows');
+                if (selectAll) selectAll.checked = false;
                 document.getElementById('shipping').value = 0;
                 document.getElementById('otherCharges').value = 0;
                 document.getElementById('portOfLoading').value = '';
                 document.getElementById('portOfDest').value = '';
                 document.getElementById('deliveryTime').value = '';
                 document.getElementById('remarks').value = '';
+                document.getElementById('tradeTerm').value = 'DDP';
+                document.getElementById('portOfLoading').value = 'Guangdong, Shenzhen';
                 
                 productRowId = 0;
                 addProductRow();
                 calculateTotals();
+                lockedPiNo = null;
+                document.getElementById('piNo').value = generateUniquePiNo();
+                refreshDraftHeader();
                 showToast('表单已清空');
             }
         }
